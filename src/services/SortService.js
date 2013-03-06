@@ -161,11 +161,6 @@ ngGridServices.factory('SortService', ['$parse', function($parse) {
             //cache it
             if (sortFn) {
                 sortService.colSortFnCache[col.field] = sortFn;
-            } else {
-                // we assign the alpha sort because anything that is null/undefined will never get passed to
-                // the actual sorting function. It will get caught in our null check and returned to be sorted
-                // down to the bottom
-                sortFn = sortService.sortAlpha;
             }
         }
         return sortFn;

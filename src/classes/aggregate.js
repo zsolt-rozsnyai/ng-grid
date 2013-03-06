@@ -1,9 +1,10 @@
-/// <reference path="../../lib/jquery-1.8.2.min" />
-/// <reference path="../../lib/angular.js" />
-/// <reference path="../constants.js" />
-/// <reference path="../namespace.js" />
-/// <reference path="../navigation.js" />
-/// <reference path="../utils.js" />
+/**
+    Aggregate class. Similar to the row object but for the aggregate row.
+    @constructor
+    @param {Object} aggEntity - The entity that represents the aggregate configuration.
+    @param {Object} rowFactory - The grid's row Factory.
+    @param {int} the configured rowheight - The height of the row in pixels.
+ */
 ng.Aggregate = function (aggEntity, rowFactory, rowHeight) {
     var self = this;
     self.rowIndex = 0;
@@ -20,6 +21,9 @@ ng.Aggregate = function (aggEntity, rowFactory, rowHeight) {
     self.isAggRow = true;
     self.offsetleft = aggEntity.gDepth * 25;
     self.aggLabelFilter = aggEntity.aggLabelFilter;
+    /** 
+      toggleExpand function. This is called by the template to toggle the collapsed state to show all of the children or hide.
+    */
     self.toggleExpand = function() {
         self.collapsed = self.collapsed ? false : true;
         if (self.orig) {
@@ -27,10 +31,17 @@ ng.Aggregate = function (aggEntity, rowFactory, rowHeight) {
         }
         self.notifyChildren();
     };
+    /** 
+      setExpand function. This is called by the template to set the collapsed state.
+      @param {boolean} rowFactory - true or false, true to set it collapsed. otherwise, false.
+    */
     self.setExpand = function(state) {
         self.collapsed = state;
         self.notifyChildren();
     };
+    /** 
+      notifyChildren recursive function. this walks down the tree of children and sets their hidden state based on the collapsed state of the aggregate.
+    */
     self.notifyChildren = function () {
         var longest = Math.max(rowFactory.aggCache.length, self.children.length);
         for (var i = 0; i < longest; i++) {
@@ -51,9 +62,15 @@ ng.Aggregate = function (aggEntity, rowFactory, rowHeight) {
         };
         rowFactory.renderedChange();
     };
+    /** 
+      aggClass function. returns the correct arrow class based on the collapsed state
+    */
     self.aggClass = function() {
         return self.collapsed ? "ngAggArrowCollapsed" : "ngAggArrowExpanded";
     };
+    /** 
+      totalChildren function. returns the number of children for this aggregate as an integer.
+    */
     self.totalChildren = function() {
         if (self.aggChildren.length > 0) {
             var i = 0;
@@ -72,6 +89,9 @@ ng.Aggregate = function (aggEntity, rowFactory, rowHeight) {
             return self.children.length;
         }
     };
+    /** 
+      copy function. returns a clone of this aggregate for use in the renderedRows array.
+    */
     self.copy = function () {
         var ret = new ng.Aggregate(self.entity, rowFactory, rowHeight);
         ret.orig = self;

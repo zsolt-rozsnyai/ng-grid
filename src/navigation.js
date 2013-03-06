@@ -1,5 +1,13 @@
 //set event binding on the grid so we can select using the up/down keys
-ng.moveSelectionHandler = function($scope, elm, evt, grid) {
+/** 
+    moveSelectionHandler. this handles the keyboard navigation for the grid
+    @constructor
+    @param {Object} $scope - the current grid $scope.
+    @param {Object} evt - the jquery event to be handled.
+    @param {Object} grid - the current Grid object.
+*/
+ng.moveSelectionHandler = function ($scope, evt, grid) {
+    // null check
     if ($scope.selectionService.selectedItems === undefined) {
         return true;
     }
@@ -7,6 +15,7 @@ ng.moveSelectionHandler = function($scope, elm, evt, grid) {
         newColumnIndex,
         lastInRow = false,
         firstInRow = false,
+        // get the row of the current index.
         rowIndex = $scope.selectionService.lastClickedRow.rowIndex;
     
     if ($scope.col) {

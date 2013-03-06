@@ -43,7 +43,16 @@ if (!Array.prototype.filter) {
         return res;
     };
 }
+/**
+  Utility namespace.
+@namespace
+*/
 ng.utils = {
+    /**
+        visualLength function. Measures the represented data and returns the width in pixels of how wide it would be. 
+        Consumed by the double-click event and configureColumnWidths function to see how wide to set the width of the column.
+    @param node - the HTML element which contents will be measured.
+    */
     visualLength: function(node) {
         var elem = document.getElementById('testDataLength');
         if (!elem) {
@@ -63,6 +72,11 @@ ng.utils = {
             }
         }
     },
+    /**
+        evalProperty function. returns the value specified by an arbitrary json object path "node.subNode.value" against the specified object.
+    @param entity - object to evaluate.
+    @param path - arbitrary json object path
+    */
     evalProperty: function(entity, path) {
         var propPath = path.split('.'), i = 0;
         var tempProp = entity[propPath[i]], links = propPath.length;
@@ -97,14 +111,24 @@ ng.utils = {
         }
         return retnode;
     },
+    /**
+        newId function. returns a new grid id based on the unix timestamp in milliseconds. 
+        used for setting the classes and identifying the grid when multiple grids are present
+    */
     newId: (function() {
         var seedId = new Date().getTime();
         return function() {
             return seedId += 1;
         };
     })(),
+    /**
+        seti18n function. sets the i18n compatable labels based on the selected language pack. 
+        Specified language pack must be included for it to work.
+        @param $scope - current grid $scope
+        @param language - the language key (en, fr, zh-cn, etc..)
+    */
     seti18n: function($scope, language) {
-        var $langPack = window.ngGrid.i18n[language];
+        var $langPack = window.ngGrid.i18n[language];s
         for (var label in $langPack) {
             $scope.i18n[label] = $langPack[label];
         }
@@ -122,12 +146,7 @@ ng.utils = {
 };
 
 $.extend(ng.utils, {
-    isIe6: (function() {
-        return ng.utils.ieVersion === 6;
-    })(),
-    isIe7: (function() {
-        return ng.utils.ieVersion === 7;
-    })(),
+    //IE detection
     isIe: (function() {
         return ng.utils.ieVersion !== undefined;
     })()

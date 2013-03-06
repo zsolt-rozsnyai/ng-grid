@@ -46,7 +46,7 @@ ng.DomAccessProvider = function(grid) {
 				return true;
 			} else if (!doingKeyDown) {
 				doingKeyDown = true;
-				var ret = ng.moveSelectionHandler($scope, elm, evt, grid);
+				var ret = ng.moveSelectionHandler($scope, evt, grid);
 				doingKeyDown = false;
 				return ret;
 			}

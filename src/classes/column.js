@@ -1,4 +1,12 @@
-﻿ng.Column = function(config, $scope, grid, domUtilityService) {
+﻿/**
+    Column class. the main class for vertical columns.
+    @constructor
+    @param {Object} config - The entity that holds the column specific configuration and the global grid configuration.
+    @param {Object} $scope - The grid's current scope.
+    @param {Object} grid - The grid's current scope.
+    @param {Object} domUtilityService - the service to refresh dom elements and settings when column values are changed.
+ */
+ng.Column = function (config, $scope, grid, domUtilityService) {
     var self = this,
         colDef = config.colDef,
         delay = 500,
