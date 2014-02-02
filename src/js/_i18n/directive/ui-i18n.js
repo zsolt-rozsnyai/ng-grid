@@ -28,6 +28,67 @@
             uiI18n.value('uiI18n.packs', packs);
         }
     };
+
+    /**
+     * @ngdoc directive
+     * @name ui.i18n
+     * @restrict A
+     *
+     * @description
+     * Allows you to localize your project by being able to specify a language on a tag
+     *
+     * @example
+     <doc:example module="app">
+     <doc:source>
+     <script>
+     var app = angular.module('app', ['ui.i18n']);
+
+     app.controller('main', ['$scope', function($scope){
+        $scope.language = 'en';
+        $scope.changeLanguage = function(){
+          $scope.language = $scope.language == 'es' ? 'en' : 'es';
+        };
+     }]);
+     //Declare your i18n strings, this is enclosed in order to show that this can be done anywhere in the application
+     (function(){
+        var uiI18n = angular.module('ui.i18n');
+        uiI18n.i18n.add(['en', 'en-us'],{
+            example: 'This is an example of i18n',
+            aggregate:{
+                label: 'items'
+            },
+            groupPanel:{
+                description: 'Drag a column header here and drop it to group by that column.'
+            }
+        });
+        uiI18n.i18n.add('es',{
+            example: 'no habla espaniol...',
+            aggregate:{
+                label: 'Artículos'
+            },
+            groupPanel:{
+                description: 'Arrastre un encabezado de columna aquí y soltarlo para agrupar por esa columna.'
+            }
+        });
+    })();
+     </script>
+
+     <div ng-controller="main" ui-i18n="language">
+         <button ng-click="changeLanguage()">toggle lang</button>
+         <span>{{language}}</span>
+         <h1>{{"example" | t}}</h1>
+
+         <p>{{"groupPanel.description" | t}}</p>
+
+         <p ui-t="search.placeholder"></p>
+
+         <p ui-t="invalid.translation.path"></p>
+
+         <p>{{"invalid.translation.again" | t}}</p>
+     </div>
+     </doc:source>
+     </doc:example>
+     */
     uiI18n.directive('uiI18n',['uiI18n.packs', function(packs) {
         return {
             link: function($scope, $elm, $attrs) {
@@ -65,7 +126,7 @@
         };
     }]);
 
-    // optional syntax
+    // optional filter syntax
     uiI18n.filter('t', ['$parse', 'uiI18n.packs', function($parse, packs) {
         return function(data) {
             var getter = $parse(data);
