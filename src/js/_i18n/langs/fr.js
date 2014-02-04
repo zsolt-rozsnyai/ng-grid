@@ -1,6 +1,6 @@
 ﻿(function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('fr',{
+    uiI18n.add('fr',{
         aggregate:{
             label: 'articles'
         },

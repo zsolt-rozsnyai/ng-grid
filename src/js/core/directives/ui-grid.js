@@ -2,9 +2,9 @@
   'use strict';
 
   angular.module('ui.grid').controller('uiGridController', ['$scope', '$element', '$attrs', '$log', 'gridUtil', '$q', 'uiGridConstants',
-                    '$templateCache', 'gridClassFactory', '$timeout', '$parse',
+                    '$templateCache', 'gridClassFactory', '$timeout', '$parse', '$compile',
     function ($scope, $elm, $attrs, $log, gridUtil, $q, uiGridConstants,
-              $templateCache, gridClassFactory, $timeout, $parse) {
+              $templateCache, gridClassFactory, $timeout, $parse, $compile) {
       $log.debug('ui-grid controller');
 
       var self = this;
@@ -17,6 +17,15 @@
       //all properties of grid are available on scope
       $scope.grid = self.grid;
 
+      // Function to pre-compile all the cell templates when the column definitions change
+      function preCompileCellTemplates(columns) {
+        columns.forEach(function (col) {
+          var html = col.cellTemplate.replace(uiGridConstants.COL_FIELD, 'getCellValue(row, col)');
+          
+          var compiledElementFn = $compile(html);
+          col.compiledElementFn = compiledElementFn;
+        });
+      }
       if ($attrs.uiGridColumns) {
         $attrs.$observe('uiGridColumns', function(value) {
           self.grid.options.columnDefs = value;
@@ -24,7 +33,10 @@
             .then(function(){
               // self.columnSizeCalculated = false;
               // self.renderedColumns = self.grid.columns;
-              self.refreshCanvas();
+
+              preCompileCellTemplates($scope.grid.columns);
+
+              self.refreshCanvas(true);
             });
         });
       }
@@ -50,7 +62,10 @@
             .then(function(){
               // self.columnSizeCalculated = false;
               // self.renderedColumns = self.grid.columns;
-              self.refreshCanvas();
+
+              preCompileCellTemplates($scope.grid.columns);
+
+              self.refreshCanvas(true);
             });
         }
       });
@@ -67,6 +82,8 @@
           promises.push(self.grid.buildColumns());
 
           $q.all(promises).then(function() {
+            preCompileCellTemplates($scope.grid.columns);
+
             //wrap data in a gridRow
             $log.debug('Modifying rows');
             self.grid.modifyRows(n);
@@ -80,7 +97,7 @@
             }
 
             $scope.$evalAsync(function() {
-              self.refreshCanvas();
+              self.refreshCanvas(true);
             });
           });
         }
@@ -94,75 +111,24 @@
 
 
       $scope.$watch(function () { return self.grid.styleComputations; }, function() {
-        self.refreshCanvas();
+        self.refreshCanvas(true);
       });
 
       // Refresh the canvas drawable size
-      $scope.grid.refreshCanvas = self.refreshCanvas = function() {
-        // if (self.header) {
-        //   // If we haven't calculated the sizes of the columns, calculate them!
-        //   if (! self.columnSizeCalculated) {
-        //     // Total width of header
-        //     var totalWidth = 0;
-
-        //     // All the header cell elements
-        //     var headerColumnElms = self.header[0].getElementsByClassName('ui-grid-header-cell');
-            
-        //     if (headerColumnElms.length > 0) {
-        //       // Go through all the header column elements
-        //       for (var i = 0; i < headerColumnElms.length; i++) {
-        //         var columnElm = headerColumnElms[i];
-
-        //         // Get the related column definition
-        //         var column = angular.element(columnElm).scope().col;
-
-        //         // Save the width so we can reset it
-        //         var savedWidth = columnElm.style.width;
-
-        //         // Change the width to 'auto' so it will expand out
-        //         columnElm.style.width = 'auto';
-
-        //         // Get the "drawn" width
-        //         var drawnWidth = gridUtil.outerElementWidth(columnElm);
-
-        //         // Save it in the columns defs
-        //         column.drawnWidth = drawnWidth;
-
-        //         // Reset the column width
-        //         columnElm.style.width = savedWidth;
-
-        //         // Increment the total header width by this column's drawn width
-        //         totalWidth = totalWidth + drawnWidth;
-        //       }
-
-        //       // If the total width of the header would be larger than the viewport, use it as the canvas width
-        //       if (totalWidth > self.grid.getViewportWidth()) {
-        //         self.grid.canvasWidth = totalWidth;
-
-        //         // Tell the grid to use the column drawn widths, if available
-        //         self.grid.useColumnDrawnWidths = true;
-        //       }
-        //       else {
-        //         self.grid.canvasWidth = self.grid.getViewportWidth();
-        //       }
-
-        //       // Evaluate all the stylings in another digest cycle
-        //       $scope.$evalAsync(function() {
-        //         self.grid.buildStyles($scope);
-        //       });
-
-        //       self.columnSizeCalculated = true;
-        //     }
-        //   }
-        // }
-
-        self.grid.buildStyles($scope);
+      $scope.grid.refreshCanvas = self.refreshCanvas = function(buildStyles) {
+        if (buildStyles) {
+          self.grid.buildStyles($scope);
+        }
 
         if (self.header) {
           // Putting in a timeout as it's not calculating after the grid element is rendered and filled out
           $timeout(function() {
             self.grid.headerHeight = gridUtil.outerElementHeight(self.header);
-          }, 0);
+          });
+        }
+        else {
+          // Timeout still needs to be here to trigger digest after styles have been rebuilt
+          $timeout(function() {});
         }
       };
 
@@ -242,6 +208,8 @@ angular.module('ui.grid').directive('uiGrid',
 
               uiGridCtrl.grid.gridHeight = $scope.gridHeight = gridUtil.elementHeight($elm);
 
+              uiGridCtrl.scrollbars = [];
+
               uiGridCtrl.refreshCanvas();
             }
           };
@@ -255,18 +223,29 @@ angular.module('ui.grid').directive('uiGrid',
     var uiGridCell = {
       priority: 0,
       scope: false,
+      require: '?^uiGrid',
       compile: function() {
         return {
-          pre: function($scope, $elm) {
-            // $log.debug('uiGridCell pre-link');
-            var html = $scope.col.cellTemplate
-              .replace(uiGridConstants.COL_FIELD, 'getCellValue(row,col)');
-            var cellElement = $compile(html)($scope);
-            $elm.append(cellElement);
-          },
-          post: function($scope, $elm, $attrs) {
+          pre: function($scope, $elm, $attrs, uiGridCtrl) {
+            // If the grid controller is present, use it to get the compiled cell template function
+            if (uiGridCtrl) {
+              var compiledElementFn = $scope.col.compiledElementFn;
 
+              $scope.getCellValue = uiGridCtrl.getCellValue;
+              
+              compiledElementFn($scope, function(clonedElement, scope) {
+                $elm.append(clonedElement);
+              });
+            }
+            // No controller, compile the element manually
+            else {
+              var html = $scope.col.cellTemplate
+                .replace(uiGridConstants.COL_FIELD, 'getCellValue(row,col)');
+              var cellElement = $compile(html)($scope);
+              $elm.append(cellElement);
+            }
           }
+          //post: function($scope, $elm, $attrs) {}
         };
       }
     };

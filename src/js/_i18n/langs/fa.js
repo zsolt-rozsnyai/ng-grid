@@ -1,6 +1,6 @@
 ﻿(function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('fa',{
+    uiI18n.add('fa',{
         aggregate:{
             label:  'موردها'
         },

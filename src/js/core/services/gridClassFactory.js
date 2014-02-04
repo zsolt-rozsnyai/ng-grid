@@ -308,7 +308,28 @@
       };
 
       Grid.prototype.minColumnsToRender = function () {
-        return Math.ceil(this.getViewportWidth() / this.options.columnWidth);
+        var self = this;
+        var viewport = this.getViewportWidth();
+
+        var min = 0;
+        var totalWidth = 0;
+        self.columns.forEach(function(col, i) {
+          if (totalWidth < viewport) {
+            totalWidth += col.drawnWidth;
+            min++;
+          }
+          else {
+            var currWidth = 0;
+            for (var j = i; j >= i - min; j--) {
+              currWidth += self.columns[j].drawnWidth;
+            }
+            if (currWidth < viewport) {
+              min++;
+            }
+          }
+        });
+
+        return min;
       };
 
       // NOTE: viewport drawable height is the height of the grid minus the header row height (including any border)
@@ -382,18 +403,16 @@
         this.maxVisibleColumnCount = 200;
 
         // Turn virtualization on when number of data elements goes over this number
-        this.virtualizationThreshold = 50;
+        this.virtualizationThreshold = 20;
 
-        this.columnVirtualizationThreshold = 20;
+        this.columnVirtualizationThreshold = 10;
 
         // Extra rows to to render outside of the viewport
         this.excessRows = 4;
-
-        // Extra columns to to render outside of the viewport
-        this.excessColumns = 8;
-
         this.scrollThreshold = 4;
 
+        // Extra columns to to render outside of the viewport
+        this.excessColumns = 4;
         this.horizontalScrollThreshold = 2;
 
         /**

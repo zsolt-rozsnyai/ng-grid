@@ -1,6 +1,6 @@
 ﻿(function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('zh-cn',{
+    uiI18n.add('zh-cn',{
         aggregate:{
             label: '条目'
         },

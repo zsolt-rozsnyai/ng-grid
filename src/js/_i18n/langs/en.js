@@ -3,7 +3,7 @@
  */
 (function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add(["en", "en-us"],{
+    uiI18n.add(["en", "en-us"],{
         aggregate:{
             label: 'items'
         },

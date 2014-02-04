@@ -1,6 +1,6 @@
 ﻿(function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('zh-tw',{
+    uiI18n.add('zh-tw',{
         aggregate:{
             label: '筆'
         },

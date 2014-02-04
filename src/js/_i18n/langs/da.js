@@ -1,6 +1,6 @@
 ﻿(function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('da',{
+    uiI18n.add('da',{
         aggregate:{
             label: 'artikler'
         },

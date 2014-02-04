@@ -1,137 +1,155 @@
 /**
- * Created by Tim on 2/1/14.
+ * ui-i18n Created by Tim Sweet on 2/1/14.
+ * https://github.com/timothyswt
+ * MIT License
  */
-
-(function(){
+(function(deepExtend){
     'use strict';
-    var uiI18n = angular.module('ui.i18n', []);
-    uiI18n.value('uiI18n.packs', {
-        i18n: {},
-        lang: null
-    });
-    uiI18n.i18n = {
-        add: function(langs, strings){
-            var packs = angular.injector(['ng','ui.i18n']).get('uiI18n.packs');
-            if (typeof(langs) === "object"){
-                angular.forEach(langs, function(lang){
-                    if (lang){
-                        var lower = lang.toLowerCase();
-                        var combined = angular.extend(packs.i18n[lang] || {}, strings);
-                        packs.i18n[lower] = combined;
-                    }
-                });
-            } else {
-                var lower = langs.toLowerCase();
-                var combined = angular.extend(packs.i18n[langs] || {}, strings);
-                packs.i18n[lower] = combined;
-            }
-            uiI18n.value('uiI18n.packs', packs);
+    var MISSING = '[MISSING]: ',
+        UPDATE_EVENT = '$uiI18n',
+        FILTER_ALIASES = ['t', 'translate'],
+        DIRECTIVE_ALIASES = ['uiT', 'uiTranslate'],
+        LOCALE_DIRECTIVE_ALIAS = 'uiI18n',
+    // default to english
+        DEFAULT_LANG = 'en-US',
+        langCache = {
+            _langs: {},
+            current: null
+        },
+        uiI18n = angular.module('ui.i18n', []);
+
+    langCache.get = function(lang){
+        return langCache._langs[lang.toLowerCase()];
+    };
+    langCache.add = function(lang, strings){
+        var lower = lang.toLowerCase();
+        var cache = langCache._langs;
+        cache[lower] = deepExtend(cache[lower] || {}, strings);
+    };
+    langCache.setCurrent = function(lang){
+        langCache.current = lang.toLowerCase();
+    };
+    langCache.getCurrent = function(){
+        return langCache.get(langCache.current);
+    };
+
+    uiI18n._cache = langCache;
+    uiI18n.$broadcast = function(lang){
+        if (lang && this.$root){
+            uiI18n.$root.$broadcast(UPDATE_EVENT, lang);
+        }
+    };
+    uiI18n.add =  function(langs, strings){
+        if (typeof(langs) === 'object'){
+            angular.forEach(langs, function(lang){
+                if (lang){
+                    langCache.add(lang, strings);
+                }
+            });
+        } else {
+            langCache.add(langs, strings);
+        }
+    };
+    uiI18n.set = function(lang){
+        if (lang){
+            langCache.setCurrent(lang);
+            uiI18n.$broadcast(lang);
         }
     };
 
-    /**
-     * @ngdoc directive
-     * @name ui.i18n
-     * @restrict A
-     *
-     * @description
-     * Allows you to localize your project by being able to specify a language on a tag
-     *
-     * @example
-     <doc:example module="app">
-     <doc:source>
-     <script>
-     var app = angular.module('app', ['ui.i18n']);
-
-     app.controller('main', ['$scope', function($scope){
-        $scope.language = 'en';
-        $scope.changeLanguage = function(){
-          $scope.language = $scope.language == 'es' ? 'en' : 'es';
-        };
-     }]);
-     //Declare your i18n strings, this is enclosed in order to show that this can be done anywhere in the application
-     (function(){
-        var uiI18n = angular.module('ui.i18n');
-        uiI18n.i18n.add(['en', 'en-us'],{
-            example: 'This is an example of i18n',
-            aggregate:{
-                label: 'items'
-            },
-            groupPanel:{
-                description: 'Drag a column header here and drop it to group by that column.'
-            }
-        });
-        uiI18n.i18n.add('es',{
-            example: 'no habla espaniol...',
-            aggregate:{
-                label: 'Artículos'
-            },
-            groupPanel:{
-                description: 'Arrastre un encabezado de columna aquí y soltarlo para agrupar por esa columna.'
-            }
-        });
-    })();
-     </script>
-
-     <div ng-controller="main" ui-i18n="language">
-         <button ng-click="changeLanguage()">toggle lang</button>
-         <span>{{language}}</span>
-         <h1>{{"example" | t}}</h1>
-
-         <p>{{"groupPanel.description" | t}}</p>
-
-         <p ui-t="search.placeholder"></p>
-
-         <p ui-t="invalid.translation.path"></p>
-
-         <p>{{"invalid.translation.again" | t}}</p>
-     </div>
-     </doc:source>
-     </doc:example>
-     */
-    uiI18n.directive('uiI18n',['uiI18n.packs', function(packs) {
+    var localeDirective = function() {
         return {
-            link: function($scope, $elm, $attrs) {
-                // check for watchable property
-                var lang = $scope.$eval($attrs.uiI18n);
-                if (lang){
-                    $scope.$watch($attrs.uiI18n, function(newLang){
-                        if (newLang){
-                            packs.lang = newLang.toLowerCase();
+            compile: function(){
+                return {
+                    pre: function($scope, $elm, $attrs) {
+                        var alias = LOCALE_DIRECTIVE_ALIAS;
+                        if (!uiI18n.$root){
+                            uiI18n.$root = $scope.$root;
                         }
-                    });
-                } else {
-                    // fall back to the string value
-                    lang = $attrs.uiI18n;
-                }
-                packs.lang = lang;
+                        // check for watchable property
+                        var lang = $scope.$eval($attrs[alias]);
+                        if (lang){
+                            $scope.$watch($attrs[alias], uiI18n.set);
+                        } else if ($attrs.$$observers){
+                            $scope.$on('$destroy', $attrs.$observe(alias, uiI18n.set));
+                        } else {
+                            // fall back to the string value
+                            lang = $attrs[alias];
+                        }
+                        uiI18n.set(lang || DEFAULT_LANG);
+                    }
+                };
             }
         };
-    }]);
+    };
+    uiI18n.directive(LOCALE_DIRECTIVE_ALIAS, localeDirective);
 
     // directive syntax
-    uiI18n.directive('uiT',['$parse', 'uiI18n.packs', function($parse, packs) {
+    var uitDirective = function($parse) {
         return {
-            require: '?^uiI18n',
-            link: function($scope, $elm, $attrs) {
-                var getter = $parse($attrs.uiT);
-
-                $scope.$watch(function(){
-                    return packs.lang;
-                }, function(){
-                    // set text based on i18n current language
-                    $elm.html(getter(packs.i18n[packs.lang]) || "Missing translation: " + $attrs.uiT);
-                });
+            restrict: 'EA',
+            compile: function(){
+                return {
+                    pre: function($scope, $elm, $attrs) {
+                        if (!uiI18n.$root){
+                            uiI18n.$root = $scope.$root;
+                        }
+                        var alias1 = DIRECTIVE_ALIASES[0],
+                            alias2 = DIRECTIVE_ALIASES[1];
+                        var token = $attrs[alias1] || $attrs[alias2] || $elm.html();
+                        var missing = MISSING + token;
+                        var observer;
+                        if ($attrs.$$observers){
+                            var prop = $attrs[alias1] ? alias1 : alias2;
+                            observer = $attrs.$observe(prop, function(result){
+                                if (result){
+                                    $elm.html($parse(result)(langCache.getCurrent()) || missing);
+                                }
+                            });
+                        }
+                        var getter = $parse(token);
+                        var listener = $scope.$on(UPDATE_EVENT, function(evt, lang){
+                            if (observer){
+                                observer($attrs[alias1] || $attrs[alias2]);
+                            } else {
+                                // set text based on i18n current language
+                                $elm.html(getter(langCache.get(lang)) || missing);
+                            }
+                        });
+                        $scope.$on('$destroy', listener);
+                    }
+                };
             }
         };
-    }]);
+    };
 
     // optional filter syntax
-    uiI18n.filter('t', ['$parse', 'uiI18n.packs', function($parse, packs) {
+    var uitFilter = function($parse) {
         return function(data) {
             var getter = $parse(data);
             // set text based on i18n current language
-            return getter(packs.i18n[packs.lang]) || "Missing translation: " + data;
+            return getter(langCache.getCurrent()) || MISSING + data;
         };
-    }]);
-})();
+    };
+
+    angular.forEach(DIRECTIVE_ALIASES, function(alias){
+        uiI18n.directive(alias,['$parse', uitDirective]);
+    });
+    angular.forEach(FILTER_ALIASES, function(alias){
+        uiI18n.filter(alias,['$parse', uitFilter]);
+    });
+})(function deepExtend(destination, source) {
+    'use strict';
+    // adding deep copy method until angularjs supports deep copy like everyone else.
+    // https://github.com/angular/angular.js/pull/5059
+    for (var property in source) {
+        if (source[property] && source[property].constructor &&
+            source[property].constructor === Object) {
+            destination[property] = destination[property] || {};
+            deepExtend(destination[property], source[property]);
+        } else {
+            destination[property] = source[property];
+        }
+    }
+    return destination;
+});

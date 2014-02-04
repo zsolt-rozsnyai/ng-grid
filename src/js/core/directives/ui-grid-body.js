@@ -38,7 +38,8 @@
             return;
           }
 
-          scrollTop = uiGridCtrl.canvas[0].scrollHeight * scrollPercentage;
+          // scrollTop = uiGridCtrl.canvas[0].scrollHeight * scrollPercentage;
+          scrollTop = uiGridCtrl.grid.getCanvasHeight() * scrollPercentage;
 
           var minRows = uiGridCtrl.grid.minRowsToRender();
           var maxRowIndex = uiGridCtrl.grid.rows.length - minRows;
@@ -83,7 +84,8 @@
             return;
           }
 
-          scrollLeft = uiGridCtrl.canvas[0].scrollWidth * scrollPercentage;
+          // scrollLeft = uiGridCtrl.canvas[0].scrollWidth * scrollPercentage;
+          scrollLeft = uiGridCtrl.grid.getCanvasWidth() * scrollPercentage;
 
           var minCols = uiGridCtrl.grid.minColumnsToRender();
           var maxColumnIndex = uiGridCtrl.grid.columns.length - minCols;
@@ -130,6 +132,7 @@
               var scrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
 
               var scrollYPercentage = args.y.percentage;
+              $log.debug('scrollYPercentage', scrollYPercentage);
               var newScrollTop = Math.max(0, scrollYPercentage * scrollLength);
               
               uiGridCtrl.adjustScrollVertical(newScrollTop, scrollYPercentage);
@@ -177,7 +180,7 @@
 
             // Keep scrollPercentage within the range 0-1.
             if (scrollYPercentage < 0) { scrollYPercentage = 0; }
-            if (scrollYPercentage > 1) { scrollYPercentage = 1; }
+            else if (scrollYPercentage > 1) { scrollYPercentage = 1; }
 
             args.y = { percentage: scrollYPercentage, pixels: scrollYAmount };
           }
@@ -189,7 +192,7 @@
 
             // Keep scrollPercentage within the range 0-1.
             if (scrollXPercentage < 0) { scrollXPercentage = 0; }
-            if (scrollXPercentage > 1) { scrollXPercentage = 1; }
+            else if (scrollXPercentage > 1) { scrollXPercentage = 1; }
 
             args.x = { percentage: scrollXPercentage, pixels: scrollXAmount };
           }
@@ -206,6 +209,10 @@
             directionX = 1,
             moveStart;
         function touchmove(event) {
+          if (event.originalEvent) {
+            event = event.originalEvent;
+          }
+
           event.preventDefault();
 
           var deltaX, deltaY, newX, newY;
@@ -224,10 +231,18 @@
 
           if (deltaY !== 0) {
             var scrollYPercentage = (scrollTopStart + deltaY) / (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
+
+            if (scrollYPercentage > 1) { scrollYPercentage = 1; }
+            else if (scrollYPercentage < 0) { scrollYPercentage = 0; }
+
             args.y = { percentage: scrollYPercentage, pixels: deltaY };
           }
           if (deltaX !== 0) {
             var scrollXPercentage = (scrollLeftStart + deltaX) / (uiGridCtrl.grid.getCanvasWidth() - uiGridCtrl.grid.getViewportWidth());
+
+            if (scrollXPercentage > 1) { scrollXPercentage = 1; }
+            else if (scrollXPercentage < 0) { scrollXPercentage = 0; }
+
             args.x = { percentage: scrollXPercentage, pixels: deltaX };
           }
 
@@ -235,6 +250,10 @@
         }
         
         function touchend(event) {
+          if (event.originalEvent) {
+            event = event.originalEvent;
+          }
+
           event.preventDefault();
 
           $document.unbind('touchmove', touchmove);
@@ -283,6 +302,12 @@
               if (decelerateCount > 0) {
                 decelerate();
               }
+              else {
+                uiGridCtrl.scrollbars.forEach(function (sbar) {
+                  sbar.removeClass('ui-grid-scrollbar-visible');
+                  sbar.removeClass('ui-grid-scrolling');
+                });
+              }
             }, decelerateInterval);
           }
           decelerate();
@@ -290,7 +315,16 @@
 
         if (GridUtil.isTouchEnabled()) {
           $elm.bind('touchstart', function (event) {
+            if (event.originalEvent) {
+              event = event.originalEvent;
+            }
+
             event.preventDefault();
+
+            uiGridCtrl.scrollbars.forEach(function (sbar) {
+              sbar.addClass('ui-grid-scrollbar-visible');
+              sbar.addClass('ui-grid-scrolling');
+            });
 
             moveStart = new Date();
             startY = event.targetTouches[0].screenY;
@@ -322,17 +356,19 @@
 
         var setRenderedRows = function (newRows) {
           // NOTE: without the $evalAsync the new rows don't show up
-          $scope.$evalAsync(function() {
+          // $scope.$evalAsync(function() {
             uiGridCtrl.grid.setRenderedRows(newRows);
-          });
+            $scope.grid.refreshCanvas();
+          // });
         };
 
         var setRenderedColumns = function (newColumns) {
           // NOTE: without the $evalAsync the new rows don't show up
-          $scope.$evalAsync(function() {
+          // $timeout(function() {
             uiGridCtrl.grid.setRenderedColumns(newColumns);
             updateColumnOffset();
-          });
+            $scope.grid.refreshCanvas();
+          // });
         };
 
         // Method for updating the visible rows
@@ -358,14 +394,21 @@
         };
 
         $scope.rowStyle = function (index) {
+          var styles = {};
+
           if (index === 0 && uiGridCtrl.currentTopRow !== 0) {
             // The row offset-top is just the height of the rows above the current top-most row, which are no longer rendered
             var hiddenRowWidth = (uiGridCtrl.currentTopRow) * uiGridCtrl.grid.options.rowHeight;
 
-            return { 'margin-top': hiddenRowWidth + 'px' };
+            // return { 'margin-top': hiddenRowWidth + 'px' };
+            styles['margin-top'] = hiddenRowWidth + 'px';
           }
 
-          return null;
+          if (uiGridCtrl.currentFirstColumn !== 0) {
+            styles['margin-left'] = uiGridCtrl.columnOffset + 'px';
+          }
+
+          return styles;
         };
         
         var updateColumnOffset = function() {

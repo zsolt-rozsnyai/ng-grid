@@ -1,8 +1,8 @@
 (function(){
     var uiI18n = angular.module('ui.i18n');
-    uiI18n.i18n.add('pt-br',{
+    uiI18n.add('pt-br',{
         aggregate:{
-            label: 'itens',
+            label: 'itens'
         },
         groupPanel:{
             description: 'Arraste e solte uma coluna aqui para agrupar por essa coluna'
