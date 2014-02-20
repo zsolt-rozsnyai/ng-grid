@@ -20,7 +20,12 @@
          */
         createGrid : function() {
           var grid = new Grid(gridUtil.newId());
+
           grid.registerColumnBuilder(service.defaultColumnBuilder);
+
+          grid.registerRowFilter(service.rowSearcher);
+          grid.registerRowFilter(service.rowSorter);
+
           return grid;
         },
 
@@ -280,6 +285,40 @@
       Grid.prototype.registerStyleComputation = function (styleComputationInfo) {
         this.styleComputations.push(styleComputationInfo);
       };
+
+
+      Grid.prototype.registerRowFilter = function(filter) {
+        // TODO(c0bra): validate filter?
+
+        this.rowFilters.push(filter);
+      };
+
+      Grid.prototype.removeRowFilter = function(filter) {
+        var idx = this.rowFilters.indexOf(filter);
+
+        if (typeof(idx) !== 'undefined' && idx !== undefined) {
+          this.rowFilters.slice(idx, 1);
+        }
+      };
+      
+      Grid.prototype.processRowFilters = function(rows) {
+        var self = this;
+        self.rowFilters.forEach(function (filter) {
+          filter.call(self, rows);
+        });
+      };
+
+      Grid.prototype.setVisibleRows = function(rows) {
+        var newVisibleRowCache = [];
+        rows.forEach(function (row) {
+          if (row.visible) {
+            newVisibleRowCache.push(row);
+          }
+        });
+
+        this.visibleRowCache = newVisibleRowCache;
+      };
+
 
       Grid.prototype.setRenderedRows = function (newRows) {
         this.renderedRows.length = newRows.length;
