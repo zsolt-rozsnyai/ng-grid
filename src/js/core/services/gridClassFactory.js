@@ -68,6 +68,10 @@
           }
 
           return $q.all(templateGetPromises);
+        },
+
+        rowSearcher: function(rows) {
+          var grid = this;
         }
 
       };

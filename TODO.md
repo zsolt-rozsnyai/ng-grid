@@ -10,6 +10,9 @@
 1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts
 1. [TODO] - Take a look at Hamster.js for normalizing mouse wheel events, test on MacAir.
 
+# Memory Issues
+1. [LEAKS] - Make sure stylesheets are being removed on $destroy, and anywhere that we might be doing manual appendChild, or other appending.
+1. [LEAKS] - Null out all references to DOM elements in $destroy handler
 
 # MORE
 

@@ -88,6 +88,8 @@
 
           $q.all(promises).then(function() {
             preCompileCellTemplates($scope.grid.columns);
+            
+            self.grid.processRowFilters(n);
 
             //wrap data in a gridRow
             $log.debug('Modifying rows');
