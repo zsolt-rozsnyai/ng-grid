@@ -157,6 +157,10 @@
         $scope.$broadcast(uiGridConstants.events.GRID_SCROLL, args);
       };
 
+      self.firePostScrollEvent = function(args) {
+        $scope.$broadcast(uiGridConstants.events.POST_GRID_SCROLL, args);
+      };
+
     }]);
 
 /**

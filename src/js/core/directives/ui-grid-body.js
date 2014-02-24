@@ -30,6 +30,8 @@
 
         uiGridCtrl.prevScrollTop = 0;
         uiGridCtrl.prevScrollLeft = 0;
+        uiGridCtrl.prevRowScrollIndex = 0;
+        uiGridCtrl.prevColumnScrollIndex = 0;
         uiGridCtrl.currentTopRow = 0;
         uiGridCtrl.currentFirstColumn = 0;
 
@@ -41,9 +43,18 @@
           // scrollTop = uiGridCtrl.canvas[0].scrollHeight * scrollPercentage;
           scrollTop = uiGridCtrl.grid.getCanvasHeight() * scrollPercentage;
 
+          var curRowIndex = uiGridCtrl.prevRowScrollIndex;
+
           uiGridCtrl.adjustRows(scrollTop, scrollPercentage);
 
           uiGridCtrl.prevScrollTop = scrollTop;
+
+          uiGridCtrl.firePostScrollEvent({
+            rows: {
+              prevIndex: curRowIndex,
+              curIndex: uiGridCtrl.prevRowScrollIndex
+            }
+          });
         };
 
         uiGridCtrl.adjustRows = function(scrollTop, scrollPercentage) {

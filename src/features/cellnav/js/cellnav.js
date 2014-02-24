@@ -274,8 +274,8 @@
    *  @restrict A
    *  @description Stacks on top of ui.grid.uiGridCell to provide cell navigation
    */
-  module.directive('uiGridCell', ['uiGridCellNavService', '$log', 'uiGridCellNavConstants',
-    function (uiGridCellNavService, $log, uiGridCellNavConstants) {
+  module.directive('uiGridCell', ['uiGridCellNavService', '$log', 'uiGridCellNavConstants', 'uiGridConstants',
+    function (uiGridCellNavService, $log, uiGridCellNavConstants, uiGridConstants) {
       return {
         priority: -150, // run after default uiGridCell directive and ui.grid.edit uiGridCell
         restrict: 'A',
@@ -311,10 +311,14 @@
              }
           });
 
+          $scope.$on(uiGridConstants.events.POST_GRID_SCROLL, function (evt, args) {
+            $log.debug('grid scroll done!', args.rows.prevIndex, args.rows.curIndex);
+          });
+
           function setTabEnabled(){
             $elm.find('div').attr("tabindex", -1);
           }
-
+          
           function setFocused(){
             var div = $elm.find('div');
             div.focus();

@@ -7,7 +7,8 @@
     TEMPLATE_REGEXP: /<.+>/,
     events: {
       GRID_SCROLL: 'uiGridScroll',
-      GRID_SCROLLING: 'uiGridScrolling'
+      GRID_SCROLLING: 'uiGridScrolling',
+      POST_GRID_SCROLL: 'uiGridPostScroll'
     },
     // copied from http://www.lsauer.com/2011/08/javascript-keymap-keycodes-in-json.html
     keymap: {
