@@ -13,8 +13,6 @@
           }
 
           $elm.on('scroll', function (evt) {
-            $log.debug('viewport scroll', evt);
-
             var newScrollTop = $elm[0].scrollTop;
 
             var diff = newScrollTop - uiGridCtrl.prevScrollTop;

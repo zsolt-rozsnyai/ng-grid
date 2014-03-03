@@ -121,6 +121,8 @@
 
       // Refresh the canvas drawable size
       $scope.grid.refreshCanvas = self.refreshCanvas = function(buildStyles) {
+        $log.debug('refreshing canvas');
+
         if (buildStyles) {
           self.grid.buildStyles($scope);
         }
@@ -158,7 +160,9 @@
       };
 
       self.firePostScrollEvent = function(args) {
-        $scope.$broadcast(uiGridConstants.events.POST_GRID_SCROLL, args);
+        $log.debug('firing post-scroll');
+        
+        $scope.$emit(uiGridConstants.events.POST_GRID_SCROLL, args);
       };
 
     }]);

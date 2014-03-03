@@ -43,24 +43,17 @@
           // scrollTop = uiGridCtrl.canvas[0].scrollHeight * scrollPercentage;
           scrollTop = uiGridCtrl.grid.getCanvasHeight() * scrollPercentage;
 
-          var curRowIndex = uiGridCtrl.prevRowScrollIndex;
-
           uiGridCtrl.adjustRows(scrollTop, scrollPercentage);
 
           uiGridCtrl.prevScrollTop = scrollTop;
-
-          uiGridCtrl.firePostScrollEvent({
-            rows: {
-              prevIndex: curRowIndex,
-              curIndex: uiGridCtrl.prevRowScrollIndex
-            }
-          });
         };
 
         uiGridCtrl.adjustRows = function(scrollTop, scrollPercentage) {
           var minRows = uiGridCtrl.grid.minRowsToRender();
           var maxRowIndex = uiGridCtrl.grid.rows.length - minRows;
           uiGridCtrl.maxRowIndex = maxRowIndex;
+
+          var curRowIndex = uiGridCtrl.prevRowScrollIndex;
           
           var rowIndex = Math.ceil(Math.min(maxRowIndex, maxRowIndex * scrollPercentage));
 
@@ -92,6 +85,13 @@
           
           updateViewableRowRange(newRange);
           uiGridCtrl.prevRowScrollIndex = rowIndex;
+
+          uiGridCtrl.firePostScrollEvent({
+            rows: {
+              prevIndex: curRowIndex,
+              curIndex: uiGridCtrl.prevRowScrollIndex
+            }
+          });
         };
 
         // Virtualization for horizontal scrolling

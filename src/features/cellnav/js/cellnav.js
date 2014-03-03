@@ -241,8 +241,8 @@
    </file>
    </example>
    */
-  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants',
-    function ($log, uiGridCellNavService, uiGridCellNavConstants) {
+  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants', 'uiGridConstants',
+    function ($log, uiGridCellNavService, uiGridCellNavConstants, uiGridConstants) {
       return {
         replace: true,
         priority: -150,
@@ -258,6 +258,22 @@
                  $scope.$broadcast(uiGridCellNavConstants.CELL_NAV_EVENT, rowCol);
               };
 
+              uiGridCtrl.lastCellNav = null;
+              $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, function (evt, args) {
+                if (!args) { return; }
+
+                $log.debug('CELL_NAV_EVENT', uiGridCtrl.lastCellNav);
+                uiGridCtrl.lastCellNav = args;
+              });
+
+              $log.debug('cellnav scope', $scope);
+
+              $scope.$on(uiGridConstants.events.POST_GRID_SCROLL, function (evt, args) {
+                $log.debug('POST_GRID_SCROLL', uiGridCtrl.lastCellNav);
+                if (uiGridCtrl.lastCellNav) {
+                  uiGridCtrl.broadcastCellNav(uiGridCtrl.lastCellNav);
+                }
+              });
             },
             post: function ($scope, $elm, $attrs, uiGridCtrl) {
             }
@@ -296,31 +312,30 @@
 
             var rowCol = uiGridCellNavService.getNextRowCol(direction, $scope.grid, $scope.row, $scope.col);
 
-            $log.debug('next row ' + rowCol.row.index + ' next Col ' + rowCol.col.colDef.name);
+            // $log.debug('next row ' + rowCol.row.index + ' next Col ' + rowCol.col.colDef.name);
             uiGridCtrl.broadcastCellNav(rowCol);
             setTabEnabled();
 
             return false;
           });
 
-          $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, function(evt,rowCol){
-             if(rowCol.row === $scope.row &&
-                rowCol.col === $scope.col){
+          $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, function(evt, rowCol){
+             if (rowCol.row === $scope.row &&
+                rowCol.col === $scope.col) {
+
                $log.debug('Setting focus on Row ' + rowCol.row.index + ' Col ' + rowCol.col.colDef.name);
+
                setFocused();
              }
           });
 
-          $scope.$on(uiGridConstants.events.POST_GRID_SCROLL, function (evt, args) {
-            $log.debug('grid scroll done!', args.rows.prevIndex, args.rows.curIndex);
-          });
-
-          function setTabEnabled(){
+          function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
           }
-          
+
           function setFocused(){
             var div = $elm.find('div');
+            $log.debug('my div', angular.element(div).scope());
             div.focus();
             div.attr("tabindex", 0);
           }
