@@ -8,7 +8,8 @@
     events: {
       GRID_SCROLL: 'uiGridScroll',
       GRID_SCROLLING: 'uiGridScrolling',
-      POST_GRID_SCROLL: 'uiGridPostScroll'
+      POST_GRID_SCROLL: 'uiGridPostScroll',
+      POST_RENDER_ROWS: 'uiGridPostRenderRows'
     },
     // copied from http://www.lsauer.com/2011/08/javascript-keymap-keycodes-in-json.html
     keymap: {

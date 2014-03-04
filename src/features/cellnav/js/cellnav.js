@@ -241,8 +241,8 @@
    </file>
    </example>
    */
-  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants', 'uiGridConstants',
-    function ($log, uiGridCellNavService, uiGridCellNavConstants, uiGridConstants) {
+  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants', 'uiGridConstants', '$timeout',
+    function ($log, uiGridCellNavService, uiGridCellNavConstants, uiGridConstants, $timeout) {
       return {
         replace: true,
         priority: -150,
@@ -268,10 +268,15 @@
 
               $log.debug('cellnav scope', $scope);
 
-              $scope.$on(uiGridConstants.events.POST_GRID_SCROLL, function (evt, args) {
-                $log.debug('POST_GRID_SCROLL', uiGridCtrl.lastCellNav);
+              $scope.$on(uiGridConstants.events.POST_RENDER_ROWS, function (evt, args) {
+                $log.debug('POST_RENDER_ROWS', uiGridCtrl.lastCellNav);
                 if (uiGridCtrl.lastCellNav) {
-                  uiGridCtrl.broadcastCellNav(uiGridCtrl.lastCellNav);
+
+                  // var d = $timeout(function() {
+                    uiGridCtrl.broadcastCellNav(uiGridCtrl.lastCellNav);
+
+                  //   d();
+                  // }, 1000);
                 }
               });
             },
@@ -298,6 +303,8 @@
         require: '^uiGrid',
         scope: false,
         link: function ($scope, $elm, $attrs, uiGridCtrl) {
+          $log.debug('uiGridCell link');
+
           if (!$scope.col.allowCellFocus) {
              return;
           }
@@ -319,23 +326,35 @@
             return false;
           });
 
-          $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, function(evt, rowCol){
-             if (rowCol.row === $scope.row &&
-                rowCol.col === $scope.col) {
+          function cellNavHandler(evt, rowCol) {
+            if (rowCol.row === $scope.row &&
+              rowCol.col === $scope.col) {
 
-               $log.debug('Setting focus on Row ' + rowCol.row.index + ' Col ' + rowCol.col.colDef.name);
+              $log.debug('Setting focus on Row ' + rowCol.row.index + ' Col ' + rowCol.col.colDef.name);
 
-               setFocused();
-             }
+              setFocused();
+            }
+          }
+
+          var cellNavDereg = $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, cellNavHandler);
+
+          // $scope.$on(uiGridConstants.events.POST_GRID_SCROLL, function (evt, args) {
+          //   cellNavDereg();
+          //   cellNavDereg = $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, cellNavHandler);
+          // });
+
+          $scope.$on('$destroy', function() {
+            $elm.off('keydown');
+            cellNavDereg();
           });
 
           function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
           }
 
-          function setFocused(){
+          function setFocused() {
             var div = $elm.find('div');
-            $log.debug('my div', angular.element(div).scope());
+            $log.debug('my div', $elm.text());
             div.focus();
             div.attr("tabindex", 0);
           }

@@ -393,7 +393,10 @@
           // NOTE: without the $evalAsync the new rows don't show up
           // $scope.$evalAsync(function() {
             uiGridCtrl.grid.setRenderedRows(newRows);
-            $scope.grid.refreshCanvas();
+            $scope.grid.refreshCanvas()
+              .then(function() {
+                uiGridCtrl.firePostRenderRowsEvent();
+              });
           // });
         };
 

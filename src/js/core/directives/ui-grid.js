@@ -160,9 +160,15 @@
       };
 
       self.firePostScrollEvent = function(args) {
-        $log.debug('firing post-scroll');
+        $log.debug('firing post-grid-scroll');
         
         $scope.$emit(uiGridConstants.events.POST_GRID_SCROLL, args);
+      };
+
+      self.firePostRenderRowsEvent = function(args) {
+        $log.debug('firing post-render-rows');
+        
+        $scope.$emit(uiGridConstants.events.POST_RENDER_ROWS, args);
       };
 
     }]);
