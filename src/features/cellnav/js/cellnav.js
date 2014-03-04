@@ -269,14 +269,11 @@
               $log.debug('cellnav scope', $scope);
 
               $scope.$on(uiGridConstants.events.POST_RENDER_ROWS, function (evt, args) {
-                $log.debug('POST_RENDER_ROWS', uiGridCtrl.lastCellNav);
                 if (uiGridCtrl.lastCellNav) {
-
-                  // var d = $timeout(function() {
+                  $scope.$$postDigest(function() {
+                    $log.debug('POST_RENDER_ROWS', uiGridCtrl.lastCellNav);
                     uiGridCtrl.broadcastCellNav(uiGridCtrl.lastCellNav);
-
-                  //   d();
-                  // }, 1000);
+                  });
                 }
               });
             },
