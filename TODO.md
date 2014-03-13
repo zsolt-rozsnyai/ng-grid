@@ -4,6 +4,10 @@
 
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
 
+# Native scrolling
+
+1. Handle both horizontal and vertical scroll in viewport (call adjustHorizontal first, I believe)
+2. Try to use Kendo UI's method for overlapping the scrollbar with a <div>
 
 # MORE
 
