@@ -16,26 +16,27 @@
             var newScrollTop = $elm[0].scrollTop;
             var newScrollLeft = $elm[0].scrollLeft;
 
-            var xDiff = newScrollLeft - uiGridCtrl.prevScrollLeft;
+            if (newScrollLeft !== uiGridCtrl.prevScrollLeft) {
+              var xDiff = newScrollLeft - uiGridCtrl.prevScrollLeft;
 
-            if (xDiff !== 0) {
               var horizScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
               var horizScrollPercentage = (uiGridCtrl.prevScrollLeft + xDiff) / horizScrollLength;
 
               uiGridCtrl.adjustScrollHorizontal(newScrollLeft, horizScrollPercentage);
             }
 
-            var yDiff = newScrollTop - uiGridCtrl.prevScrollTop;
+            if (newScrollTop !== uiGridCtrl.prevScrollTop) {
+              $log.debug('newScrollTop', newScrollTop);
 
-            if (yDiff !== 0) {
+              var yDiff = newScrollTop - uiGridCtrl.prevScrollTop;
+
               // uiGridCtrl.fireScrollingEvent({ y: { pixels: diff } });
               var vertScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
-              var vertScrollPercentage = (uiGridCtrl.prevScrollTop + yDiff) / vertScrollLength;
+              // var vertScrollPercentage = (uiGridCtrl.prevScrollTop + yDiff) / vertScrollLength;
+              var vertScrollPercentage = newScrollTop / vertScrollLength;
 
               uiGridCtrl.adjustScrollVertical(newScrollTop, vertScrollPercentage);
             }
-
-            
           });
         }
       };

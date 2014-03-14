@@ -78,7 +78,7 @@
           }
         }
 
-        $elm.on('scroll', function (evt) {
+        function scrollEvent(evt) {
           if ($scope.type === 'vertical') {
             var newScrollTop = $elm[0].scrollTop;
 
@@ -93,6 +93,7 @@
               }
             };
             
+            $log.debug('Fire scroll event');
             uiGridCtrl.fireScrollingEvent(args);
 
             previousScrollPosition = newScrollTop;
@@ -100,7 +101,44 @@
           else if ($scope.type === 'horizontal') {
             
           }
+        }
+
+        // Set the scrollTop without firing an extra scroll event
+        function safeScrollTop(newScrollTop) {
+          // Turn off the scroll handler so updating the scrollTop doesn't re-fire the event
+          $elm.off('scroll', scrollEvent);
+          
+          $elm[0].scrollTop = newScrollTop;
+
+          // Rebind the scroll handler in the next scope tick, otherwise the above scrollTop assignment will still fire the handler
+          $scope.$evalAsync(function() {
+            $elm.on('scroll', scrollEvent);
+          });
+        }
+
+        $elm.on('scroll', scrollEvent);
+
+        $elm.on('$destroy', function() {
+          $elm.off('scroll');
         });
+
+        function gridScroll(evt, args) {
+          if ($scope.type === 'vertical') {
+            if (args.y && typeof(args.y.percentage) !== 'undefined' && args.y.percentage !== undefined) {
+              var vertScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
+
+              var newScrollTop = Math.max(0, args.y.percentage * vertScrollLength);
+              
+              safeScrollTop(newScrollTop);
+            }
+          }
+          else if ($scope.type === 'horizontal') {
+            
+          }
+        }
+
+        var gridScrollDereg = $scope.$on(uiGridConstants.events.GRID_SCROLL, gridScroll);
+        $scope.$on('$destroy', gridScrollDereg);
       }
     };
   }]);
