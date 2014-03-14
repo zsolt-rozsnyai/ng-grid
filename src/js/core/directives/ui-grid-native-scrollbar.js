@@ -1,7 +1,7 @@
 (function(){
 // 'use strict';
 
-  angular.module('ui.grid').directive('uiGridNativeScrollbar', ['$log', '$document', 'uiGridConstants', 'gridUtil', function($log, $document, uiGridConstants, gridUtil) {
+  angular.module('ui.grid').directive('uiGridNativeScrollbar', ['$log', '$timeout', '$document', 'uiGridConstants', 'gridUtil', function($log, $timeout, $document, uiGridConstants, gridUtil) {
     var scrollBarWidth = gridUtil.getScrollbarWidth();
 
     return {
@@ -15,7 +15,8 @@
         $elm.addClass('ui-grid-native-scrollbar');
 
         var previousScrollPosition;
-        var elmMaxScroll;
+
+        var elmMaxScroll = 0;
 
         if ($scope.type === 'vertical') {
           // Update the width based on native scrollbar width
@@ -44,23 +45,36 @@
         // Save the contents elm inside the scrollbar elm so it sizes correctly
         $elm.append(contents);
 
-        // Save the maximum scroll distance for the element
+        // Get the relevant element dimension now that the contents are in it
         if ($scope.type === 'vertical') {
           elmMaxScroll = gridUtil.elementHeight($elm);
         }
         else if ($scope.type === 'horizontal') {
           elmMaxScroll = gridUtil.elementWidth($elm);
         }
-
-        // Update the vertical scrollbar's contents height
+        
         function updateNativeVerticalScrollbar() {
+          // Update the vertical scrollbar's content height so it's the same as the canvas
           var h = uiGridCtrl.grid.getCanvasHeight();
-          uiGridCtrl.grid.nativeHorizontalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical .contents { height: ' + h + 'px; }';
+          uiGridCtrl.grid.nativeVerticalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical .contents { height: ' + h + 'px; }';
+
+          // If there's a horizontal scrollbar
+          if (uiGridCtrl.grid.horizontalScrollbarHeight && uiGridCtrl.grid.horizontalScrollbarHeight > 0) {
+            // Get the viewport height
+            var scrollbarHeight = uiGridCtrl.grid.getViewportHeight();
+            // scrollbarHeight = scrollbarHeight - uiGridCtrl.grid.horizontalScrollbarHeight;
+
+            // Update the vertical scrollbar so it doesn't overlap/underlap the horizontal scrollbar
+            uiGridCtrl.grid.nativeVerticalScrollbarStyles = uiGridCtrl.grid.nativeVerticalScrollbarStyles +
+              ' .grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical { height: ' + scrollbarHeight + 'px; }';
+
+            elmMaxScroll = scrollbarHeight;
+          }
         }
 
         function updateNativeHorizontalScrollbar() {
           var w = uiGridCtrl.grid.getCanvasWidth();
-          uiGridCtrl.grid.nativeVerticalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.horizontal .contents { width: ' + w + 'px; }';
+          uiGridCtrl.grid.nativeHorizontalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.horizontal .contents { width: ' + w + 'px; }';
         }
 
         if (uiGridCtrl.grid.options.enableNativeScrolling) {
@@ -85,9 +99,16 @@
             var yDiff = previousScrollPosition - newScrollTop;
 
             var vertScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
+
+            // Subtract the h. scrollbar height from the vertical length if it's present
+            if (uiGridCtrl.grid.horizontalScrollbarHeight && uiGridCtrl.grid.horizontalScrollbarHeight > 0) {
+              vertScrollLength = vertScrollLength - uiGridCtrl.grid.horizontalScrollbarHeight;
+            }
+
             var vertScrollPercentage = newScrollTop / vertScrollLength;
 
             var args = {
+              target: $elm,
               y: {
                 percentage: vertScrollPercentage
               }
@@ -103,19 +124,6 @@
           }
         }
 
-        // Set the scrollTop without firing an extra scroll event
-        function safeScrollTop(newScrollTop) {
-          // Turn off the scroll handler so updating the scrollTop doesn't re-fire the event
-          $elm.off('scroll', scrollEvent);
-          
-          $elm[0].scrollTop = newScrollTop;
-
-          // Rebind the scroll handler in the next scope tick, otherwise the above scrollTop assignment will still fire the handler
-          $scope.$evalAsync(function() {
-            $elm.on('scroll', scrollEvent);
-          });
-        }
-
         $elm.on('scroll', scrollEvent);
 
         $elm.on('$destroy', function() {
@@ -123,13 +131,18 @@
         });
 
         function gridScroll(evt, args) {
+          // Don't listen to our own scroll event!
+          if (args.target && args.target === $elm) {
+            return;
+          }
+
           if ($scope.type === 'vertical') {
             if (args.y && typeof(args.y.percentage) !== 'undefined' && args.y.percentage !== undefined) {
               var vertScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
 
               var newScrollTop = Math.max(0, args.y.percentage * vertScrollLength);
               
-              safeScrollTop(newScrollTop);
+              $elm[0].scrollTop = newScrollTop;
             }
           }
           else if ($scope.type === 'horizontal') {

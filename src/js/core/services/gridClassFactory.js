@@ -348,6 +348,18 @@
         return min;
       };
 
+      Grid.prototype.getBodyHeight = function () {
+        // Start with the viewportHeight
+        var bodyHeight = this.getViewportHeight();
+
+        // Add the horizontal scrollbar height if there is one
+        if (typeof(this.horizontalScrollbarHeight) !== 'undefined' && this.horizontalScrollbarHeight !== undefined && this.horizontalScrollbarHeight > 0) {
+          bodyHeight = bodyHeight + this.horizontalScrollbarHeight;
+        }
+
+        return bodyHeight;
+      };
+
       // NOTE: viewport drawable height is the height of the grid minus the header row height (including any border)
       // TODO(c0bra): account for footer height
       Grid.prototype.getViewportHeight = function () {

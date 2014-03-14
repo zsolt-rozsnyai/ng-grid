@@ -13,6 +13,10 @@
       width: {{ grid.getCanvasWidth() }}px;
     }
 
+    .grid{{ grid.id }} .ui-grid-body {
+      height: {{ grid.getBodyHeight() }}px;
+    }
+
     .grid{{ grid.id }} .ui-grid-viewport {
       height: {{ grid.getViewportHeight() }}px;
       width: {{ grid.getViewportWidth() }}px;

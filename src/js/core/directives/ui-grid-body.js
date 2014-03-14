@@ -157,7 +157,7 @@
               }
               else if (typeof(args.y.pixels) !== 'undefined' && args.y.pixels !== undefined) {
                 scrollYPercentage = args.y.percentage = (oldScrollTop + args.y.pixels) / scrollLength;
-                $log.debug('y.percentage', args.y.percentage);
+                // $log.debug('y.percentage', args.y.percentage);
               }
               else {
                 throw new Error("No percentage or pixel value provided for scroll event Y axis");
@@ -187,7 +187,7 @@
               }
               else if (typeof(args.x.pixels) !== 'undefined' && args.x.pixels !== undefined) {
                 scrollXPercentage = args.x.percentage = (oldScrollLeft + args.x.pixels) / scrollWidth;
-                $log.debug('x.percentage', args.x.percentage);
+                // $log.debug('x.percentage', args.x.percentage);
               }
               else {
                 throw new Error("No percentage or pixel value provided for scroll event X axis");

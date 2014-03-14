@@ -26,8 +26,6 @@
             }
 
             if (newScrollTop !== uiGridCtrl.prevScrollTop) {
-              $log.debug('newScrollTop', newScrollTop);
-
               var yDiff = newScrollTop - uiGridCtrl.prevScrollTop;
 
               // uiGridCtrl.fireScrollingEvent({ y: { pixels: diff } });
