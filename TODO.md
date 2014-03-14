@@ -6,8 +6,9 @@
 
 # Native scrolling
 
-1. Handle both horizontal and vertical scroll in viewport (call adjustHorizontal first, I believe)
-2. Try to use Kendo UI's method for overlapping the scrollbar with a <div>
+1. [TODO] - Currently native vertical scrolling works, but it's not nearly as performant as virtuall. Even on the 100 row example it's showing blank areas at the top/bottom...  are we firing
+   too many events or some other hijinx?
+
 
 # MORE
 
