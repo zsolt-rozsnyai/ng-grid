@@ -143,10 +143,9 @@
         // Listen for scroll events
         var scrollUnbinder = $scope.$on(uiGridConstants.events.GRID_SCROLL, function(evt, args) {
           // GridUtil.requestAnimationFrame(function() {
-            // Vertical scroll
-
             uiGridCtrl.prevScrollArgs = args;
 
+            // Vertical scroll
             if (args.y) {
               var scrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
 
@@ -166,6 +165,7 @@
 
               var newScrollTop = Math.max(0, scrollYPercentage * scrollLength);
               
+              // NOTE: uiGridBody catches this in its 'scroll' event handler. setting scrollTop fires a scroll event
               // uiGridCtrl.adjustScrollVertical(newScrollTop, scrollYPercentage);
 
               uiGridCtrl.viewport[0].scrollTop = newScrollTop;
@@ -179,12 +179,23 @@
             if (args.x) {
               var scrollWidth = (uiGridCtrl.grid.getCanvasWidth() - uiGridCtrl.grid.getViewportWidth());
 
-              var scrollXPercentage = args.x.percentage;
+              var oldScrollLeft = uiGridCtrl.viewport[0].scrollLeft;
+
+              var scrollXPercentage;
+              if (typeof(args.x.percentage) !== 'undefined' && args.x.percentage !== undefined) {
+                scrollXPercentage = args.x.percentage;
+              }
+              else if (typeof(args.x.pixels) !== 'undefined' && args.x.pixels !== undefined) {
+                scrollXPercentage = args.x.percentage = (oldScrollLeft + args.x.pixels) / scrollWidth;
+                $log.debug('x.percentage', args.x.percentage);
+              }
+              else {
+                throw new Error("No percentage or pixel value provided for scroll event X axis");
+              }
+
               var newScrollLeft = Math.max(0, scrollXPercentage * scrollWidth);
               
               uiGridCtrl.adjustScrollHorizontal(newScrollLeft, scrollXPercentage);
-
-              var oldScrollLeft = uiGridCtrl.viewport[0].scrollLeft;
 
               uiGridCtrl.viewport[0].scrollLeft = newScrollLeft;
 

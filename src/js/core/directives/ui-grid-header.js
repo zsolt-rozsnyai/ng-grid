@@ -51,6 +51,8 @@
               // Get the width of the viewport
               var availableWidth = uiGridCtrl.grid.getViewportWidth();
 
+              $log.debug('availableWidth', availableWidth);
+
               // The total number of columns
               // var equalWidthColumnCount = columnCount = uiGridCtrl.grid.options.columnDefs.length;
               // var equalWidth = availableWidth / equalWidthColumnCount;
@@ -208,7 +210,7 @@
 
 
               // If the grid width didn't divide evenly into the column widths and we have pixels left over, dole them out to the columns one by one to make everything fit
-              var leftoverWidth = uiGridCtrl.grid.gridWidth - parseInt(canvasWidth, 10);
+              var leftoverWidth = uiGridCtrl.grid.getViewportWidth() - parseInt(canvasWidth, 10);
 
               if (leftoverWidth > 0 && canvasWidth > 0) {
                 var remFn = function (column) {
@@ -230,6 +232,11 @@
 
               $scope.columnStyles = ret;
 
+              // Add the vertical scrollbar width back in to the canvas width, it's taken out in getCanvasWidth
+              if (uiGridCtrl.grid.verticalScrollbarWidth) {
+                canvasWidth = canvasWidth + uiGridCtrl.grid.verticalScrollbarWidth;
+              }
+
               uiGridCtrl.grid.canvasWidth = parseInt(canvasWidth, 10);
             }
 
@@ -245,7 +252,7 @@
             //todo: remove this if by injecting gridCtrl into unit tests
             if (uiGridCtrl) {
               uiGridCtrl.grid.registerStyleComputation({
-                priority: 0,
+                priority: 5,
                 func: updateColumnWidths
               });
             }
