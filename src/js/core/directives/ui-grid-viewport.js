@@ -19,8 +19,8 @@
             if (newScrollLeft !== uiGridCtrl.prevScrollLeft) {
               var xDiff = newScrollLeft - uiGridCtrl.prevScrollLeft;
 
-              var horizScrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
-              var horizScrollPercentage = (uiGridCtrl.prevScrollLeft + xDiff) / horizScrollLength;
+              var horizScrollLength = (uiGridCtrl.grid.getCanvasWidth() - uiGridCtrl.grid.getViewportWidth());
+              var horizScrollPercentage = newScrollLeft / horizScrollLength;
 
               uiGridCtrl.adjustScrollHorizontal(newScrollLeft, horizScrollPercentage);
             }

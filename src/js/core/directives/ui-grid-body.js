@@ -103,6 +103,12 @@
           // scrollLeft = uiGridCtrl.canvas[0].scrollWidth * scrollPercentage;
           scrollLeft = uiGridCtrl.grid.getCanvasWidth() * scrollPercentage;
 
+          uiGridCtrl.adjustColumns(scrollLeft, scrollPercentage);
+
+          uiGridCtrl.prevScrollLeft = scrollLeft;
+        };
+
+        uiGridCtrl.adjustColumns = function(scrollLeft, scrollPercentage) {
           var minCols = uiGridCtrl.grid.minColumnsToRender();
           var maxColumnIndex = uiGridCtrl.grid.columns.length - minCols;
           uiGridCtrl.maxColumnIndex = maxColumnIndex;
@@ -134,8 +140,7 @@
             var maxLen = uiGridCtrl.grid.columns.length;
             newRange = [0, Math.max(maxLen, minCols + uiGridCtrl.grid.options.excessColumns)];
           }
-
-          uiGridCtrl.prevScrollLeft = scrollLeft;
+          
           updateViewableColumnRange(newRange);
           uiGridCtrl.prevColumnScrollIndex = colIndex;
         };
@@ -195,7 +200,7 @@
 
               var newScrollLeft = Math.max(0, scrollXPercentage * scrollWidth);
               
-              uiGridCtrl.adjustScrollHorizontal(newScrollLeft, scrollXPercentage);
+              // uiGridCtrl.adjustScrollHorizontal(newScrollLeft, scrollXPercentage);
 
               uiGridCtrl.viewport[0].scrollLeft = newScrollLeft;
 

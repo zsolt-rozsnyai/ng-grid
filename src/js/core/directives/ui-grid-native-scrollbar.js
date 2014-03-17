@@ -57,6 +57,8 @@
           // Update the vertical scrollbar's content height so it's the same as the canvas
           var h = uiGridCtrl.grid.getCanvasHeight();
           uiGridCtrl.grid.nativeVerticalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical .contents { height: ' + h + 'px; }';
+
+          elmMaxScroll = h;
         }
 
         function updateNativeHorizontalScrollbar() {
@@ -96,20 +98,35 @@
 
             var vertScrollPercentage = newScrollTop / vertScrollLength;
 
-            var args = {
+            var yArgs = {
               target: $elm,
               y: {
                 percentage: vertScrollPercentage
               }
             };
             
-            // $log.debug('Fire scroll event');
-            uiGridCtrl.fireScrollingEvent(args);
+            uiGridCtrl.fireScrollingEvent(yArgs);
 
             previousScrollPosition = newScrollTop;
           }
           else if ($scope.type === 'horizontal') {
+            var newScrollLeft = $elm[0].scrollLeft;
+
+            var xDiff = previousScrollPosition - newScrollLeft;
+
+            var horizScrollLength = (uiGridCtrl.grid.getCanvasWidth() - uiGridCtrl.grid.getViewportWidth());
+            var horizScrollPercentage = newScrollLeft / horizScrollLength;
+
+            var xArgs = {
+              target: $elm,
+              x: {
+                percentage: horizScrollPercentage
+              }
+            };
             
+            uiGridCtrl.fireScrollingEvent(xArgs);
+
+            previousScrollPosition = newScrollLeft;
           }
         }
 
@@ -135,7 +152,13 @@
             }
           }
           else if ($scope.type === 'horizontal') {
-            
+            if (args.x && typeof(args.x.percentage) !== 'undefined' && args.x.percentage !== undefined) {
+              var horizScrollLength = (uiGridCtrl.grid.getCanvasWidth() - uiGridCtrl.grid.getViewportWidth());
+
+              var newScrollLeft = Math.max(0, args.x.percentage * horizScrollLength);
+              
+              $elm[0].scrollLeft = newScrollLeft;
+            }
           }
         }
 
