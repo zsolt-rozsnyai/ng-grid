@@ -57,24 +57,13 @@
           // Update the vertical scrollbar's content height so it's the same as the canvas
           var h = uiGridCtrl.grid.getCanvasHeight();
           uiGridCtrl.grid.nativeVerticalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical .contents { height: ' + h + 'px; }';
-
-          // If there's a horizontal scrollbar
-          if (uiGridCtrl.grid.horizontalScrollbarHeight && uiGridCtrl.grid.horizontalScrollbarHeight > 0) {
-            // Get the viewport height
-            var scrollbarHeight = uiGridCtrl.grid.getViewportHeight();
-            // scrollbarHeight = scrollbarHeight - uiGridCtrl.grid.horizontalScrollbarHeight;
-
-            // Update the vertical scrollbar so it doesn't overlap/underlap the horizontal scrollbar
-            uiGridCtrl.grid.nativeVerticalScrollbarStyles = uiGridCtrl.grid.nativeVerticalScrollbarStyles +
-              ' .grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.vertical { height: ' + scrollbarHeight + 'px; }';
-
-            elmMaxScroll = scrollbarHeight;
-          }
         }
 
         function updateNativeHorizontalScrollbar() {
           var w = uiGridCtrl.grid.getCanvasWidth();
           uiGridCtrl.grid.nativeHorizontalScrollbarStyles = '.grid' + uiGridCtrl.grid.id + ' .ui-grid-native-scrollbar.horizontal .contents { width: ' + w + 'px; }';
+
+          elmMaxScroll = w;
         }
 
         if (uiGridCtrl.grid.options.enableNativeScrolling) {
@@ -114,7 +103,7 @@
               }
             };
             
-            $log.debug('Fire scroll event');
+            // $log.debug('Fire scroll event');
             uiGridCtrl.fireScrollingEvent(args);
 
             previousScrollPosition = newScrollTop;

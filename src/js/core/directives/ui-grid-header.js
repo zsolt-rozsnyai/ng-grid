@@ -51,8 +51,6 @@
               // Get the width of the viewport
               var availableWidth = uiGridCtrl.grid.getViewportWidth();
 
-              $log.debug('availableWidth', availableWidth);
-
               // The total number of columns
               // var equalWidthColumnCount = columnCount = uiGridCtrl.grid.options.columnDefs.length;
               // var equalWidth = availableWidth / equalWidthColumnCount;

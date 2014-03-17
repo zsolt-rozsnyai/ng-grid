@@ -365,6 +365,7 @@
       Grid.prototype.getViewportHeight = function () {
         var viewPortHeight = this.gridHeight - this.headerHeight;
 
+        // Account for native horizontal scrollbar, if present
         if (typeof(this.horizontalScrollbarHeight) !== 'undefined' && this.horizontalScrollbarHeight !== undefined && this.horizontalScrollbarHeight > 0) {
           viewPortHeight = viewPortHeight - this.horizontalScrollbarHeight;
         }

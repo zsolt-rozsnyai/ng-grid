@@ -48,6 +48,10 @@
 
     {{ grid.nativeVerticalScrollbarStyles }}
     {{ grid.nativeHorizontalScrollbarStyles }}
+
+    .grid{{ grid.id }} .ui-grid-native-scrollbar.vertical {
+      height: {{ grid.getViewportHeight() }}px;
+    }
   </style>
 
   <div ui-grid-header></div>

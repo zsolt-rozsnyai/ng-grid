@@ -6,6 +6,7 @@
 
 # Native scrolling
 
+1. [IDEA] - Can we unhook the mousewheel events in uiGridBody and just rely on scroll events on the viewport?
 1. [TODO] - Currently native vertical scrolling works, but it's not nearly as performant as virtuall. Even on the 100 row example it's showing blank areas at the top/bottom...  are we firing
    too many events or some other hijinx?
 
