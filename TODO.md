@@ -10,7 +10,6 @@
 1. [TODO] - Currently native vertical scrolling works, but it's not nearly as performant as virtuall. Even on the 100 row example it's showing blank areas at the top/bottom...  are we firing
    too many events or some other hijinx?
 1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts
-1. [BUG!] - Mousewheel not scrolling to complete bottom of canvas
 
 
 # MORE
