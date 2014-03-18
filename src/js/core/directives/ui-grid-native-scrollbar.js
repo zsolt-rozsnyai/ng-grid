@@ -3,6 +3,7 @@
 
   angular.module('ui.grid').directive('uiGridNativeScrollbar', ['$log', '$timeout', '$document', 'uiGridConstants', 'gridUtil', function($log, $timeout, $document, uiGridConstants, gridUtil) {
     var scrollBarWidth = gridUtil.getScrollbarWidth();
+    scrollBarWidth = scrollBarWidth > 0 ? scrollBarWidth : 17;
 
     return {
       scope: {
