@@ -33,6 +33,9 @@
               // var vertScrollPercentage = (uiGridCtrl.prevScrollTop + yDiff) / vertScrollLength;
               var vertScrollPercentage = newScrollTop / vertScrollLength;
 
+              if (vertScrollPercentage > 1) { vertScrollPercentage = 1; }
+              if (vertScrollPercentage < 0) { vertScrollPercentage = 0; }
+              
               uiGridCtrl.adjustScrollVertical(newScrollTop, vertScrollPercentage);
             }
           });

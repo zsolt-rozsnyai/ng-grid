@@ -154,6 +154,11 @@
             if (args.y) {
               var scrollLength = (uiGridCtrl.grid.getCanvasHeight() - uiGridCtrl.grid.getViewportHeight());
 
+              // Add the height of the native horizontal scrollbar, if it's there. Otherwise it will mask over the final row
+              if (uiGridCtrl.grid.horizontalScrollbarHeight && uiGridCtrl.grid.horizontalScrollbarHeight > 0) {
+                scrollLength = scrollLength + uiGridCtrl.grid.horizontalScrollbarHeight;
+              }
+
               var oldScrollTop = uiGridCtrl.viewport[0].scrollTop;
               
               var scrollYPercentage;
@@ -249,6 +254,7 @@
           }
 
           // $scope.$broadcast(uiGridConstants.events.GRID_SCROLL, args);
+
           uiGridCtrl.fireScrollingEvent(args);
         });
 

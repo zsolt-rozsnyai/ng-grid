@@ -84,6 +84,8 @@
           }
         }
 
+        $scope.scrollSource = null;
+
         function scrollEvent(evt) {
           if ($scope.type === 'vertical') {
             var newScrollTop = $elm[0].scrollTop;
@@ -99,6 +101,9 @@
 
             var vertScrollPercentage = newScrollTop / vertScrollLength;
 
+            if (vertScrollPercentage > 1) { vertScrollPercentage = 1; }
+            if (vertScrollPercentage < 0) { vertScrollPercentage = 0; }
+
             var yArgs = {
               target: $elm,
               y: {
@@ -106,7 +111,14 @@
               }
             };
             
-            uiGridCtrl.fireScrollingEvent(yArgs);
+            // If the source of this scroll is defined (i.e., not us, then don't fire the scroll event because we'll be re-triggering)
+            if (!$scope.scrollSource) {
+              uiGridCtrl.fireScrollingEvent(yArgs);
+            }
+            else {
+              // Reset the scroll source for the next scroll event
+              $scope.scrollSource = null;
+            }
 
             previousScrollPosition = newScrollTop;
           }
@@ -125,7 +137,14 @@
               }
             };
             
-            uiGridCtrl.fireScrollingEvent(xArgs);
+            // If the source of this scroll is defined (i.e., not us, then don't fire the scroll event because we'll be re-triggering)
+            if (!$scope.scrollSource) {
+              uiGridCtrl.fireScrollingEvent(xArgs);
+            }
+            else {
+              // Reset the scroll source for the next scroll event
+              $scope.scrollSource = null;
+            }
 
             previousScrollPosition = newScrollLeft;
           }
@@ -139,9 +158,12 @@
 
         function gridScroll(evt, args) {
           // Don't listen to our own scroll event!
-          if (args.target && args.target === $elm) {
+          if (args.target && (args.target === $elm || args.target.hasClass('ui-grid-native-scrollbar'))) {
             return;
           }
+
+          // Set the source of the scroll event in our scope so it's available in our 'scroll' event handler
+          $scope.scrollSource = args.target;
 
           if ($scope.type === 'vertical') {
             if (args.y && typeof(args.y.percentage) !== 'undefined' && args.y.percentage !== undefined) {

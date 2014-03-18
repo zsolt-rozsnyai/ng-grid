@@ -148,6 +148,8 @@
                 .then(function() {
                   // Then fire a scroll event to put the scrollbar in the right place, so it doesn't end up too far ahead or behind
                   var args = uiGridCtrl.prevScrollArgs ? uiGridCtrl.prevScrollArgs : { x: { percentage: 0 } };
+
+                  args.target = $elm;
                     
                   // Add an extra bit of percentage to the scroll event based on the xDiff we were passed
                   if (xDiff && args.x && args.x.pixels) {
