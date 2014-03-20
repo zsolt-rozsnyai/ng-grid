@@ -25,6 +25,7 @@ angular.module('ui.grid')
    <br/>see angular docs on binding expressions
    </li>
    <li>displayName - column name when displayed on screen.  defaults to name</li>
+   <li>sortingAlgorithm - Algorithm to use for sorting this column. Takes 'a' and 'b' parameters like any normal sorting function.</li>
    <li>todo: add other optional fields as implementation matures</li>
    </ul>
    *
@@ -104,6 +105,10 @@ angular.module('ui.grid')
     //self.cursor = self.sortable ? 'pointer' : 'default';
 
     self.visible = true;
+
+    self.sortingAlgorithm = colDef.sortingAlgorithm;
+
+    self.sort = {};
   };
 
   return GridColumn;

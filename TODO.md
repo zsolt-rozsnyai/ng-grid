@@ -5,6 +5,10 @@
 1. [TODO] - Add row filtering
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
 
+# Row sorting
+
+1. [TODO] - Make row builders and rows processors async with $q
+
 # Native scrolling
 
 1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts

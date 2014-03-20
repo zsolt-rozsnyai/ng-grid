@@ -1,4 +1,6 @@
-<div class="ui-grid-header-cell col{{ col.index }}">
+<div class="ui-grid-header-cell col{{ col.index }}" ng-class="{ 'sortable': sortable }">
     <div class="ui-grid-vertical-bar">&nbsp;</div>
     <div class="ui-grid-cell-contents" col-index="renderIndex">{{ col.displayName }}</span></div>
+
+    <!-- TODO(c0bra): add sort direction indicators -->
 </div>

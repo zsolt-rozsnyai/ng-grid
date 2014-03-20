@@ -88,8 +88,6 @@
 
           $q.all(promises).then(function() {
             preCompileCellTemplates($scope.grid.columns);
-            
-            self.grid.processRowFilters(n);
 
             //wrap data in a gridRow
             $log.debug('Modifying rows');
@@ -146,12 +144,21 @@
         return p.promise;
       };
 
-      var cellValueGetterCache = {};
-      self.getCellValue = function(row,col){
-        if(!cellValueGetterCache[col.colDef.name]){
-          cellValueGetterCache[col.colDef.name] = $parse(row.getEntityQualifiedColField(col));
-        }
-        return cellValueGetterCache[col.colDef.name](row);
+      self.getCellValue = function(row, col) {
+        return $scope.grid.getCellValue(row, col);
+      };
+
+      $scope.grid.refreshRows = self.refreshRows = function () {
+        debugger;
+        var self = this;
+
+        var renderableRows = $scope.grid.processRowsProcessors(self.grid.rows);
+
+        $scope.grid.setVisibleRows(renderableRows);
+
+        self.redrawRows();
+
+        self.refreshCanvas();
       };
 
       //todo: throttle this event?
@@ -254,7 +261,7 @@ angular.module('ui.grid').directive('uiGrid',
             // No controller, compile the element manually
             else {
               var html = $scope.col.cellTemplate
-                .replace(uiGridConstants.COL_FIELD, 'getCellValue(row,col)');
+                .replace(uiGridConstants.COL_FIELD, 'getCellValue(row, col)');
               var cellElement = $compile(html)($scope);
               $elm.append(cellElement);
             }

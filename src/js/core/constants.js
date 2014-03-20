@@ -46,7 +46,12 @@
       F10: 121,
       F11: 122,
       F12: 123
-    }
+    },
+    ASC: 'asc',
+    DESC: 'desc',
+
+    // TODO(c0bra): Create full list of these somehow. NOTE: do any allow a space before or after them?
+    CURRENCY_SYMBOLS: ['ƒ', '$', '£', '$', '¤', '¥', '៛', '₩', '₱', '฿', '₫']
   });
 
 })();
