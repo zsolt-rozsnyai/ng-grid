@@ -110,15 +110,29 @@ module.exports = function(grunt) {
       dist: {
         // paths: ['/bower_components/bootstrap'],
         files: {
-          'dist/release/<%= pkg.name %>.css': ['src/less/main.less', 'src/features/*/less/**/*.less'],
+          'dist/release/<%= pkg.name %>.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/icon/icons.data.svg.css'],
         }
       },
       min: {
         files: {
-          'dist/release/<%= pkg.name %>.min.css': ['src/less/main.less', 'src/features/*/less/**/*.less']
+          'dist/release/<%= pkg.name %>.min.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/icon/icons.data.svg.css']
         },
         options: {
           compress: true
+        }
+      }
+    },
+
+    grunticon: {
+      icons: {
+        files: [{
+          expand: true,
+          cwd: 'src/img',
+          src: ['*.svg'],
+          dest: '.tmp/icon'
+        }],
+        options: {
+          cssprefix: '.ui-grid-icon-'
         }
       }
     },
@@ -296,6 +310,11 @@ module.exports = function(grunt) {
         tasks: ['less', 'ngdocs', 'concat:customizer_less']
       },
 
+      grunticon: {
+        files: 'src/img/**/*.svg',
+        tasks: ['grunticon', 'less']
+      },
+
       docs: {
         files: ['misc/tutorial/**/*.ngdoc', 'misc/doc/**'],
         tasks: 'ngdocs'
@@ -463,6 +482,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-conventional-changelog');
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-shell-spawn');
+  grunt.loadNpmTasks('grunt-grunticon');
 
   // grunt.renameTask('protractor', 'protractor-old');
   grunt.registerTask('protractor-watch', function () {
@@ -493,7 +513,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['before-test', 'test', 'after-test']);
 
   // Build with no testing
-  grunt.registerTask('build', ['concat', 'uglify', 'less', 'ngdocs', 'copy']);
+  grunt.registerTask('build', ['concat', 'uglify', 'grunticon', 'less', 'ngdocs', 'copy']);
 
   // Auto-test tasks for development
   grunt.registerTask('autotest:unit', ['karmangular:start']);
