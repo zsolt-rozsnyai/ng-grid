@@ -132,7 +132,10 @@ module.exports = function(grunt) {
           dest: '.tmp/icon'
         }],
         options: {
-          cssprefix: '.ui-grid-icon-'
+          cssprefix: '.ui-grid-icon-',
+          colors: {
+            'default': '#2c3e50'
+          }
         }
       }
     },
