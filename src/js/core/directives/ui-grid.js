@@ -149,7 +149,6 @@
       };
 
       $scope.grid.refreshRows = self.refreshRows = function () {
-        debugger;
         var self = this;
 
         var renderableRows = $scope.grid.processRowsProcessors(self.grid.rows);

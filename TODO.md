@@ -2,8 +2,15 @@
 
 # CURRENT
 
+1. [IDEA] - Add gridOptions.options for all opts, and deep watch it then rebuild
+1. [IDEA] - Add version number to uiGrid module.
+
+1. [TODO] - Remove $timeout decorator in angular-bootstrap-prettify.js in grunt-ngdocs custom module
 1. [TODO] - Add row filtering
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
+1. [TODO] - Add handling for sorting null values with columnDef sortingAlgorithm (PR #940)
+1. [TODO] - Inject uiGridConstants.ASC and .DESC into uiGridHeaderCell template. Right now 'desc' is hardcoded
+1. [TODO] - Rename columnSorter to rowSorter. Duh.
 
 # Row sorting
 
