@@ -52,6 +52,8 @@
   bottom: 0;
   background-color: inherit;
 
+  .user-select(none);
+
   // Default to width 0 so header height can calculate right. Otherwise
   //  the header cells will flow onto the next line of the header container
   //  and cause the header height to be calculated as twice the height
@@ -67,4 +69,11 @@
 .ui-grid-header .ui-grid-vertical-bar {
   top: 0;
   bottom: 0;
+}
+
+.ui-grid-header-cell-menu {
+  border: @gridBorderWidth solid @borderColor;
+  .rounded(@gridBorderRadius);
+
+  position: absolute;
 }

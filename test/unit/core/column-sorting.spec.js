@@ -168,4 +168,10 @@ describe('columnSorter', function() {
     });
   });
 
+  describe('window resizing', function () {
+    it('should hide an open menu', function () {
+      // TODO(c0bra) ...
+    });
+  });
+
 });
