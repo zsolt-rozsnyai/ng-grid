@@ -6,7 +6,7 @@
     // background-color: @darkGray; // #EAEAEA
     border-bottom: 1px solid @borderColor; // #D4D4D4
 
-    overflow: hidden;
+    overflow: hidden;  // Disable so menus show up
     font-weight: bold;
 
     .gradient(@headerBackgroundColor, @headerGradientStart, @headerGradientStop);  
@@ -25,7 +25,7 @@
   }
 
 .ui-grid-header-viewport {
-  overflow: hidden;
+  overflow: hidden; // Disable so menus show up
 }
 
 .ui-grid-header-canvas {
@@ -72,8 +72,41 @@
 }
 
 .ui-grid-header-cell-menu {
+  background: @headerBackgroundColor;
   border: @gridBorderWidth solid @borderColor;
+  padding: 8px;
   .rounded(@gridBorderRadius);
+  .box-shadow(e("0 10px 20px rgba(0, 0, 0, 0.2), inset 0 12px 12px -14px rgba(0, 0, 0, 0.2)"));
+  z-index: 2; // So it shows up over grid canvas
+  position: fixed;
 
-  position: absolute;
+  // &.ng-hide-remove, &.ng-hide-add {
+  //   .transition();
+  // }
+
+  // &.ng-hide-add.ng-hide-add-active {
+  //   .transform(translateY(-210px));
+  // }
+
+  // &.ng-hide-remove.ng-hide-remove-active {
+  //   .transform(translateY(0px));
+  // }
+
+  &.ng-hide-add, &.ng-hide-remove {
+    -webkit-transition:all linear 0.5s;
+    -moz-transition:all linear 0.5s;
+    -o-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+    display:block!important;
+  }
+   
+  &.ng-hide-add.ng-hide-add-active,
+  &.ng-hide-remove {
+    opacity:0;
+  }
+   
+  &.ng-hide-add,
+  &.ng-hide-remove.ng-hide-remove-active {
+    opacity:1;
+  }
 }

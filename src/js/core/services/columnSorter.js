@@ -226,8 +226,9 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
     // Re-usable variables
     var col, direction;
 
-    // IE9 HACK.... omg, I can't reference data array within the sort fn below. has to be a separate reference....!!!!
+    // IE9-11 HACK.... the 'rows' variable would be empty where we call columnSorter.getSortFn(...) below. We have to use a separate reference
     // var d = data.slice(0);
+    var r = rows.slice(0);
 
     // Now actually sort the data
     return rows.sort(function rowSortFn(rowA, rowB) {
@@ -240,7 +241,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
         col = sortCols[idx];
         direction = sortCols[idx].sort.direction;
 
-        sortFn = columnSorter.getSortFn(grid, col, rows);
+        sortFn = columnSorter.getSortFn(grid, col, r);
         
         var propA = grid.getCellValue(rowA, col); // $parse(col.field)(rowA);
         var propB = grid.getCellValue(rowB, col); // $parse(col.field)(rowB);

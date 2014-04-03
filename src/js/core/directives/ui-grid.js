@@ -165,6 +165,17 @@
         $scope.$broadcast(uiGridConstants.events.GRID_SCROLL, args);
       };
 
+      self.fireEvent = function(eventName, args) {
+        // Add the grid to the event arguments if it's not there
+        if (typeof(args) === 'undefined' || args === undefined) {
+          if (typeof(args.grid) === 'undefined' || args.grid === undefined) {
+            args.grid = self.grid;
+          }
+        }
+
+        $scope.$broadcast(eventName, args);
+      };
+
     }]);
 
 /**

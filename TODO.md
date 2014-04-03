@@ -1,15 +1,30 @@
 # TODO
 
+<!-- 1. [TODO] - Hide menu on click outside it -->
+1. [IDEA] - Try grunt-fontello for making our own custom icon font, put font files and css in same output dir... 
+    1. Might need to only concatenate -codes.css file, and do our own .icon class
+    1. [NOTE] - Use "-webkit-text-stroke: 0.3px" on icon font to fix jaggies in Chrome on Windows
+1. [TODO] - Add a failing test for the IE9-11 column sorting hack (columnSorter.js, line 229)
+1. [TODO] - Move sort indicator right next to column name text (on right)
+1. [TODO] - Make column menu slide down (CSS transition)
+1. [TODO] - Kendo Grid shows the column menu positioned OUTSIDE the grid for the final column, but it doesn't flow outside the window.
+    1. It is positioned by specific pixel amount. We will need to measure the menu size in order to get it right under any menu button we use.
+1. [TODO] - Inject uiGridConstants.ASC and .DESC into uiGridHeaderCell template. Right now 'desc' is hardcoded
+1. [BUG] - Header popping up when dragging to resize a column. Need to fire a COLUMN_DRAG_START event and cancel the long-click timeout on it
+   1. Might need to make dragging and reordering columns watch for a minimum pixel delta before starting drag, so it doesn't always cancel long-clicks
+
+<!-- 1. [TODO] - Make column menu long-click only listen for LEFT click, not right click which it's doing now (can add a test for this, long right-click shouldn't show/hide menu) -->
+
 # CURRENT
 
+1. [TODO] - Remove IE11 cell selected weird green color...
 1. [IDEA] - Add gridOptions.options for all opts, and deep watch it then rebuild
 1. [IDEA] - Add version number to uiGrid module.
 
-1. [TODO] - Remove $timeout decorator in angular-bootstrap-prettify.js in grunt-ngdocs custom module
+<!-- 1. [TODO] - Remove $timeout decorator in angular-bootstrap-prettify.js in grunt-ngdocs custom module -->
 1. [TODO] - Add row filtering
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
 1. [TODO] - Add handling for sorting null values with columnDef sortingAlgorithm (PR #940)
-1. [TODO] - Inject uiGridConstants.ASC and .DESC into uiGridHeaderCell template. Right now 'desc' is hardcoded
 1. [TODO] - Rename columnSorter to rowSorter. Duh.
 
 # Row sorting
@@ -18,7 +33,7 @@
 
 # Native scrolling
 
-1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts
+1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts.
 1. [TODO] - Take a look at Hamster.js for normalizing mouse wheel events, test on MacAir.
 
 # Memory Issues

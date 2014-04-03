@@ -1,6 +1,6 @@
 (function(){
 
-angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$window', 'gridUtil', 'uiGridConstants', function ($log, $timeout, $window, gridUtil, uiGridConstants) {
+angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants', function ($log, $timeout, $window, $document, gridUtil, uiGridConstants) {
   // Do stuff after mouse has been down this many ms on the header cell
   var mousedownTimeout = 1000;
 
@@ -58,15 +58,29 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
       // Long-click (for mobile)
       var cancelMousedownTimeout;
       var mousedownStartTime = 0;
-      $elm.on('mousedown', function(evt) {
+      $elm.on('mousedown', function(event) {
+        if (typeof(event.originalEvent) !== 'undefined' && event.originalEvent !== undefined) {
+          event = event.originalEvent;
+        }
+
+        // Don't show the menu if it's not the left button
+        if (event.button && event.button !== 0) {
+          return;
+        }
+
         mousedownStartTime = (new Date()).getTime();
 
         cancelMousedownTimeout = $timeout(function() { }, mousedownTimeout);
 
         cancelMousedownTimeout.then(function () {
-          $scope.menuShown = !$scope.menuShown;
+          toggleMenu();
         });
       });
+
+      function documentClick() {
+        $scope.$apply(hideMenu);
+        $document.off('click', documentClick);
+      }
 
       // Show or hide the menu
       function toggleMenu() {
@@ -78,27 +92,42 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
           /* Move the menu to right below this header cell */
 
           // Get hea header cell's location
-          var rect = $elm[0].getBoundingClientRect();
-          var top = rect.top,
-              left = rect.left;
+          // var rect = $elm[0].getBoundingClientRect();
+          // var top = rect.top,
+          //     left = rect.left;
 
-          var height = gridUtil.elementHeight($elm);
-          var width = gridUtil.elementWidth($elm);
+          // var height = gridUtil.elementHeight($elm);
+          // var width = gridUtil.elementWidth($elm);
 
-          $colMenu[0].offsetTop = top + height;
-          $colMenu[0].offsetLeft = left + width;
+          // $colMenu[0].offsetTop = top + height;
+          // $colMenu[0].offsetLeft = left + width;
+
+          // Hide any other open menus!
 
           // Show the menu for this column
           $scope.menuShown = true;
+
+          $document.on('click', documentClick);
+
+          uiGridCtrl.fireEvent(uiGridConstants.events.COLUMN_MENU_SHOWN, { target: $elm });
         }
       }
 
       function hideMenu () { $scope.menuShown = false; }
       $window.addEventListener('resize', hideMenu);
 
+      $scope.$on(uiGridConstants.events.COLUMN_MENU_SHOWN, function (event, args) {
+        if (args.target !== $elm) {
+          hideMenu();
+        }
+      });
+
       // If this column is sortable, add a click event handler
       if ($scope.sortable) {
-        $elm.on('click', function() {
+        $elm.on('click', function(evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+
           $timeout.cancel(cancelMousedownTimeout);
 
           var mousedownEndTime = (new Date()).getTime();
@@ -119,6 +148,7 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
 
           // Unbind from window resize events
           $window.removeEventListener('resize', hideMenu);
+          $document.off('click', documentClick);
         });
       }
     }
