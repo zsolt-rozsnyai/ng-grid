@@ -44,11 +44,11 @@ describe('uiGridHeaderCell', function () {
           menu2;
 
       beforeEach(function () {
-        headerCell1 = $(grid).find('.ui-grid-header-cell:nth(1)');
-        headerCell2 = $(grid).find('.ui-grid-header-cell:nth(2)');
+        headerCell1 = $(grid).find('.ui-grid-header-cell:nth(1) .inner');
+        headerCell2 = $(grid).find('.ui-grid-header-cell:nth(2) .inner');
 
-        menu1 = $(grid).find('.ui-grid-header-cell-menu:nth(1)');
-        menu2 = $(grid).find('.ui-grid-header-cell-menu:nth(2)');
+        menu1 = $(grid).find('.ui-grid-header-cell-menu:nth(1) .inner');
+        menu2 = $(grid).find('.ui-grid-header-cell-menu:nth(2) .inner');
       });
 
     describe('showing a menu with long-click', function () {

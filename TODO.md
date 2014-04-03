@@ -7,6 +7,7 @@
 1. [TODO] - Add a failing test for the IE9-11 column sorting hack (columnSorter.js, line 229)
 1. [TODO] - Move sort indicator right next to column name text (on right)
 1. [TODO] - Make column menu slide down (CSS transition)
+   1. [NOTE] - Kendo uses a transparent container for the menu. It's attached directly to the document body and positioned next to the column header. The menu then can slide in from OUTSIDE its container, or rather UNDER its container. The container functions like a viewport in this case.
 1. [TODO] - Kendo Grid shows the column menu positioned OUTSIDE the grid for the final column, but it doesn't flow outside the window.
     1. It is positioned by specific pixel amount. We will need to measure the menu size in order to get it right under any menu button we use.
 1. [TODO] - Inject uiGridConstants.ASC and .DESC into uiGridHeaderCell template. Right now 'desc' is hardcoded

@@ -94,22 +94,30 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
           // Get hea header cell's location
           // var rect = $elm[0].getBoundingClientRect();
           // var top = rect.top,
-          //     left = rect.left;
+          var left = $elm[0].offsetLeft;
 
           // var height = gridUtil.elementHeight($elm);
-          // var width = gridUtil.elementWidth($elm);
+          var width = gridUtil.elementWidth($elm, true);
 
-          // $colMenu[0].offsetTop = top + height;
-          // $colMenu[0].offsetLeft = left + width;
+          gridUtil.fakeElement($colMenu, {}, function(newElm) {
+            var inner = newElm.querySelectorAll('.inner');
+            angular.element(inner).removeClass('ng-hide');
 
-          // Hide any other open menus!
+            var myWidth = gridUtil.elementWidth(newElm, true);
 
-          // Show the menu for this column
-          $scope.menuShown = true;
+            // $colMenu[0].offsetTop = top + height;
+            $log.debug('l, w, m', left, width, myWidth);
 
-          $document.on('click', documentClick);
+            $colMenu.css('left', (left + width - myWidth) + 'px');
 
-          uiGridCtrl.fireEvent(uiGridConstants.events.COLUMN_MENU_SHOWN, { target: $elm });
+            // Show the menu for this column
+            $scope.menuShown = true;
+
+            $document.on('click', documentClick);
+
+            // Hide any other open menus!
+            uiGridCtrl.fireEvent(uiGridConstants.events.COLUMN_MENU_SHOWN, { target: $elm });
+          });
         }
       }
 
