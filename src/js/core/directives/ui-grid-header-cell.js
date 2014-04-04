@@ -2,7 +2,7 @@
 
 angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants', function ($log, $timeout, $window, $document, gridUtil, uiGridConstants) {
   // Do stuff after mouse has been down this many ms on the header cell
-  var mousedownTimeout = 1000;
+  var mousedownTimeout = 500;
 
   var uiGridHeaderCell = {
     priority: 0,
@@ -20,6 +20,10 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
       // Hide the menu by default
       $scope.menuShown = false;
 
+      // Put asc and desc sort directions in scope
+      $scope.asc = uiGridConstants.ASC;
+      $scope.desc = uiGridConstants.DESC;
+
       // Store a reference to menu element
       var $colMenu = angular.element( $elm[0].querySelectorAll('.ui-grid-header-cell-menu') );
 
@@ -36,23 +40,16 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         $scope.sortable = false;
       }
 
-      function handleClick() {
-        // TODO(c0bra): add/remove other columns from sorting...
-        uiGridCtrl.grid.resetSortPriorities($scope.col);
-
-        // Figure out the sort direction
-        if ($scope.col.sort.direction && $scope.col.sort.direction === uiGridConstants.ASC) {
-          $scope.col.sort.direction = uiGridConstants.DESC;
-        }
-        else {
-          $scope.col.sort.direction = uiGridConstants.ASC;
+      function handleClick(evt) {
+        // If the shift key is being held down, add this column to the sort
+        var add = false;
+        if (evt.shiftKey) {
+          add = true;
         }
 
-        // TODO(c0bra): if there's a SHIFT-key modifier then add this column to the sorting, but don't unset the other ones
-        $scope.col.sort.priority = 0;
-
-        // Rebuild the grid's rows
-        uiGridCtrl.refreshRows();
+        // Sort this column then rebuild the grid's rows
+        uiGridCtrl.grid.sortColumn($scope.col, add)
+          .then(uiGridCtrl.refreshRows);
       }
 
       // Long-click (for mobile)
@@ -76,11 +73,20 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
           uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
         });
       });
+
+      $elm.on('mouseup', function () {
+        $timeout.cancel(cancelMousedownTimeout);
+      });
+
+      $scope.toggleMenu = function($event) {
+        $event.stopPropagation();
+
+        uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
+      };
       
       // If this column is sortable, add a click event handler
       if ($scope.sortable) {
         $elm.on('click', function(evt) {
-          evt.preventDefault();
           evt.stopPropagation();
 
           $timeout.cancel(cancelMousedownTimeout);
@@ -93,7 +99,7 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
           }
           else {
             $log.debug('short click!');
-            handleClick();
+            handleClick(evt);
           }
         });
 
@@ -103,6 +109,9 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         });
       }
     }
+    // controller: ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
+      
+    // }]
   };
 
   return uiGridHeaderCell;

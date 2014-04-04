@@ -71,6 +71,17 @@
   bottom: 0;
 }
 
+.ui-grid-column-menu-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  .ui-grid-icon-angle-down {
+    vertical-align: sub;
+  }
+}
+
 .ui-grid-column-menu {
   z-index: 2; // So it shows up over grid canvas
   position: absolute;
@@ -100,7 +111,6 @@
 
 .ui-grid-column-menu .inner {
   position: relative;
-  padding: 8px;
   white-space: nowrap;
 
   &.ng-hide-add, &.ng-hide-remove {
@@ -118,5 +128,24 @@
   &.ng-hide-remove.ng-hide-remove-active {
     // opacity: 1;
     .transform(translateY(0));
+  }
+}
+
+.ui-grid-column-menu .inner ul {
+  margin: 0;
+  list-style-type: none;
+
+  li {
+    padding: 8px;
+    cursor: pointer;
+
+    &:hover {
+      // background-color: negation(@headerBackgroundColor, #fff);
+      .inner-shadow(@vertical: 0, @blur: 14px, @alpha: 0.2);
+    }
+  }
+
+  li:not(:last-child) {
+    border-bottom: @gridBorderWidth solid @borderColor;
   }
 }

@@ -149,16 +149,19 @@
       };
 
       $scope.grid.refreshRows = self.refreshRows = function () {
-        var self = this;
+        var renderableRows = self.grid.processRowsProcessors(self.grid.rows);
 
-        var renderableRows = $scope.grid.processRowsProcessors(self.grid.rows);
-
-        $scope.grid.setVisibleRows(renderableRows);
+        self.grid.setVisibleRows(renderableRows);
 
         self.redrawRows();
 
         self.refreshCanvas();
       };
+
+      /* Sorting Methods */
+      
+
+      /* Event Methods */
 
       //todo: throttle this event?
       self.fireScrollingEvent = function(args) {

@@ -189,11 +189,11 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
 
     // Sort the "sort columns" by their sort priority
     sortCols = sortCols.sort(function (a, b) {
-      // Both columns have a sorty priority
+      // Both columns have a sort priority
       if (a.sort.priority !== undefined && b.sort.priority !== undefined) {
         // A is higher priority
         if (a.sort.priority < b.sort.priority) {
-          return 1;
+          return -1;
         }
         // Equal
         else if (a.sort.priority === b.sort.priority) {
@@ -201,16 +201,16 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
         }
         // B is higher
         else {
-          return -1;
+          return 1;
         }
       }
       // Only A has a priority
       else if (a.sort.priority) {
-        return 1;
+        return -1;
       }
       // Only B has a priority
       else if (b.sort.priority) {
-        return -1;
+        return 1;
       }
       // Neither has a priority
       else {
@@ -220,6 +220,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
 
     // Now rows to sort by, maintain original order
     if (sortCols.length === 0) {
+      console.log("NO COLS TO SORT!");
       return rows;
     }
     

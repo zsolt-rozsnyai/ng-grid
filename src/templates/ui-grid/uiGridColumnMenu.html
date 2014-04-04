@@ -1,5 +1,10 @@
 <div class="ui-grid-column-menu">
   <div class="inner" ng-show="menuShown">
-    <h4>I'm a menu!</h4>
+    <ul>
+      <div ng-show="grid.options.enableSorting">
+        <li ng-click="sortColumn($event, asc)"><i class="ui-grid-icon-sort-alt-up"></i> Sort Ascending</li>
+        <li ng-click="sortColumn($event, desc)"><i class="ui-grid-icon-sort-alt-down"></i> Sort Descending</li>
+      </div>
+    </ul>
   </div>
 </div>

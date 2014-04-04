@@ -9,14 +9,23 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
     templateUrl: 'ui-grid/uiGridColumnMenu',
     replace: true,
     link: function ($scope, $elm, $attrs, uiGridCtrl) {
+      $scope.grid = uiGridCtrl.grid;
+
       var self = this;
 
       uiGridCtrl.columnMenuCtrl = self;
+
+      // Put asc and desc sort directions in scope
+      $scope.asc = uiGridConstants.ASC;
+      $scope.desc = uiGridConstants.DESC;
 
       // Show the menu
       self.showMenu = function(column, $columnElement) {
         // Swap to this column
         $scope.col = column;
+
+        // Remove an existing document click handler
+        $document.off('click', documentClick);
 
         // Reposition the menu below this column's element
         var left = $columnElement[0].offsetLeft;
@@ -50,6 +59,11 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
         $scope.menuShown = false;
       };
 
+      // Prevent clicks on the menu from bubbling up to the document and making it hide prematurely
+      // $elm.on('click', function (event) {
+      //   event.stopPropagation();
+      // });
+
       function documentClick() {
         $scope.$apply(self.hideMenu);
         $document.off('click', documentClick);
@@ -61,6 +75,18 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
         $window.removeEventListener('resize', self.hideMenu);
         $document.off('click', documentClick);
       });
+
+      /* Column methods */
+      $scope.sortColumn = function (event, dir) {
+        event.stopPropagation();
+
+        $log.debug('sorting', dir);
+        uiGridCtrl.grid.sortColumn($scope.col, dir, true)
+          .then(function () {
+            uiGridCtrl.refreshRows();
+            self.hideMenu();
+          });
+      };
     }
   };
 

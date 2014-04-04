@@ -1,7 +1,7 @@
 (function(){
 
 angular.module('ui.grid')
-.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'GridOptions', 'GridColumn', 'GridRow', 'columnSorter', function($log, $q, $parse, gridUtil, GridOptions, GridColumn, GridRow, columnSorter) {
+.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'columnSorter', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, columnSorter) {
 
 /**
    * @ngdoc function
@@ -480,7 +480,20 @@ angular.module('ui.grid')
   };
 
   // Reset all sorting on the grid
-  Grid.prototype.resetSortPriorities = function(excludeCol) {
+  Grid.prototype.getNextColumnPriority = function () {
+    var self = this,
+        p = 0;
+
+    self.columns.forEach(function (col) {
+      if (col.sort && col.sort.priority && col.sort.priority > p) {
+        p = col.sort.priority;
+      }
+    });
+
+    return p + 1;
+  };
+
+  Grid.prototype.resetColumnSortPriorities = function(excludeCol) {
     var self = this;
 
     self.columns.forEach(function (col) {
@@ -488,6 +501,43 @@ angular.module('ui.grid')
         col.sort = {};
       }
     });
+  };
+
+  Grid.prototype.sortColumn = function (column, directionOrAdd, add) {
+    var self = this,
+        direction = null;
+
+    // Second argument can either be a direction or whether to add this column to the existing sort.
+    //   If it's a boolean, it's an add, otherwise, it's a direction
+    if (typeof(directionOrAdd) === 'boolean') {
+      add = directionOrAdd;
+    }
+    
+    if (!add) {
+      self.resetColumnSortPriorities(column);
+      column.sort.priority = 0;
+    }
+    else {
+      column.sort.priority = self.getNextColumnPriority();
+    }
+
+    if (!direction) {
+      // Figure out the sort direction
+      if (column.sort.direction && column.sort.direction === uiGridConstants.ASC) {
+        column.sort.direction = uiGridConstants.DESC;
+      }
+      else if (column.sort.direction && column.sort.direction === uiGridConstants.DESC) {
+        column.sort.direction = null;
+      }
+      else {
+        column.sort.direction = uiGridConstants.ASC;
+      }
+    }
+    else {
+      column.sort.direction = direction;
+    }
+
+    return $q.when(column);
   };
 
   return Grid;
