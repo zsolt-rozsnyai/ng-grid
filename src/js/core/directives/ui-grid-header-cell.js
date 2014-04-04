@@ -73,63 +73,10 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         cancelMousedownTimeout = $timeout(function() { }, mousedownTimeout);
 
         cancelMousedownTimeout.then(function () {
-          toggleMenu();
+          uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
         });
       });
-
-      function documentClick() {
-        $scope.$apply(hideMenu);
-        $document.off('click', documentClick);
-      }
-
-      // Show or hide the menu
-      function toggleMenu() {
-        if ($scope.menuShown) {
-          // If the menu is visible, hide it
-          $scope.menuShown = false;
-        }
-        else {
-          /* Move the menu to right below this header cell */
-
-          // Get hea header cell's location
-          // var rect = $elm[0].getBoundingClientRect();
-          // var top = rect.top,
-          var left = $elm[0].offsetLeft;
-
-          // var height = gridUtil.elementHeight($elm);
-          var width = gridUtil.elementWidth($elm, true);
-
-          gridUtil.fakeElement($colMenu, {}, function(newElm) {
-            var inner = newElm.querySelectorAll('.inner');
-            angular.element(inner).removeClass('ng-hide');
-
-            var myWidth = gridUtil.elementWidth(newElm, true);
-
-            // $colMenu[0].offsetTop = top + height;
-            $log.debug('l, w, m', left, width, myWidth);
-
-            $colMenu.css('left', (left + width - myWidth) + 'px');
-
-            // Show the menu for this column
-            $scope.menuShown = true;
-
-            $document.on('click', documentClick);
-
-            // Hide any other open menus!
-            uiGridCtrl.fireEvent(uiGridConstants.events.COLUMN_MENU_SHOWN, { target: $elm });
-          });
-        }
-      }
-
-      function hideMenu () { $scope.menuShown = false; }
-      $window.addEventListener('resize', hideMenu);
-
-      $scope.$on(uiGridConstants.events.COLUMN_MENU_SHOWN, function (event, args) {
-        if (args.target !== $elm) {
-          hideMenu();
-        }
-      });
-
+      
       // If this column is sortable, add a click event handler
       if ($scope.sortable) {
         $elm.on('click', function(evt) {
@@ -153,10 +100,6 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         $scope.$on('$destroy', function () {
           // Cancel any pending long-click timeout
           $timeout.cancel(cancelMousedownTimeout);
-
-          // Unbind from window resize events
-          $window.removeEventListener('resize', hideMenu);
-          $document.off('click', documentClick);
         });
       }
     }

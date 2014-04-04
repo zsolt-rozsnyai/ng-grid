@@ -71,14 +71,15 @@
   bottom: 0;
 }
 
-.ui-grid-header-cell-menu {
+.ui-grid-column-menu {
   z-index: 2; // So it shows up over grid canvas
-  position: fixed;
+  position: absolute;
   overflow: hidden;
   padding: 0 10px 20px 10px;
+  cursor: default; // Parent element has pointer cursor
 }
 
-.ui-grid-header-cell-menu .inner {
+.ui-grid-column-menu .inner {
   background: @headerBackgroundColor;
   border: @gridBorderWidth solid @borderColor;
   .rounded(@gridBorderRadius);
@@ -97,9 +98,10 @@
   // }
 }
 
-.ui-grid-header-cell-menu .inner {
+.ui-grid-column-menu .inner {
   position: relative;
   padding: 8px;
+  white-space: nowrap;
 
   &.ng-hide-add, &.ng-hide-remove {
     .transition(all, 0.05s, linear);
