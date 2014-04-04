@@ -1,4 +1,4 @@
-xdescribe('uiGridHeaderCell', function () {
+describe('uiGridHeaderCell', function () {
   var grid, $scope, $compile, $document, recompile;
 
   var data = [
@@ -40,15 +40,14 @@ xdescribe('uiGridHeaderCell', function () {
   describe('column menu', function (){ 
     var headerCell1,
           headerCell2,
-          menu1,
-          menu2;
+          menu;
 
       beforeEach(function () {
-        headerCell1 = $(grid).find('.ui-grid-header-cell:nth(1) .inner');
-        headerCell2 = $(grid).find('.ui-grid-header-cell:nth(2) .inner');
+        headerCell1 = $(grid).find('.ui-grid-header-cell:nth(0)');
+        headerCell2 = $(grid).find('.ui-grid-header-cell:nth(1)');
 
-        menu1 = $(grid).find('.ui-grid-header-cell-menu:nth(1) .inner');
-        menu2 = $(grid).find('.ui-grid-header-cell-menu:nth(2) .inner');
+        menu = $(grid).find('.ui-grid-column-menu .inner');
+        // menu2 = $(grid).find('.ui-grid-column-menu:nth(1) .inner');
       });
 
     describe('showing a menu with long-click', function () {
@@ -58,27 +57,7 @@ xdescribe('uiGridHeaderCell', function () {
         $timeout.flush();
         $scope.$digest();
 
-        expect(menu1.hasClass('ng-hide')).toBe(false, 'first column menu is visible (does not have ng-hide class)');
-      }));
-
-      it('should close other open menus', inject(function ($timeout) {
-        // Long-click on first column
-        headerCell1.trigger('mousedown');
-        $scope.$digest();
-        $timeout.flush();
-        $scope.$digest();
-
-        // First column menu is visible
-        expect(menu1.hasClass('ng-hide')).toBe(false, 'first column menu is visible (does not have ng-hide class)');
-
-        // Long-click on second column
-        headerCell2.trigger('mousedown');
-        $scope.$digest();
-        $timeout.flush();
-        $scope.$digest();
-
-        expect(menu1.hasClass('ng-hide')).toBe(true, 'first column menu is not visible (does not have ng-hide class)');
-        expect(menu2.hasClass('ng-hide')).toBe(false, 'second column menu is visible (does not have ng-hide class)');
+        expect(menu.hasClass('ng-hide')).toBe(false, 'column menu is visible (does not have ng-hide class)');
       }));
     });
 
@@ -89,23 +68,23 @@ xdescribe('uiGridHeaderCell', function () {
         $timeout.flush();
         $scope.$digest();
 
-        expect(menu1.hasClass('ng-hide')).toBe(true, 'first column menu is not visible');
+        expect(menu.hasClass('ng-hide')).toBe(true, 'column menu is not visible');
       }));
     });
 
-    ddescribe('clicking outside visible menu', function () {
+    describe('clicking outside visible menu', function () {
       it('should close the menu', inject(function($timeout) {
         headerCell1.trigger('mousedown');
         $scope.$digest();
         $timeout.flush();
         $scope.$digest();
 
-        expect(menu1.hasClass('ng-hide')).toBe(false, 'column menu is visible');
+        expect(menu.hasClass('ng-hide')).toBe(false, 'column menu is visible');
 
         $document.trigger('click');
         $scope.$digest();
         
-        expect(menu1.hasClass('ng-hide')).toBe(true, 'column menu is hidden');        
+        expect(menu.hasClass('ng-hide')).toBe(true, 'column menu is hidden');        
       }));
     });
   });
