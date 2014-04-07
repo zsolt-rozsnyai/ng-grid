@@ -220,7 +220,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
 
     // Now rows to sort by, maintain original order
     if (sortCols.length === 0) {
-      console.log("NO COLS TO SORT!");
+      // console.log("NO COLS TO SORT!");
       return rows;
     }
     

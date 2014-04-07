@@ -1,19 +1,25 @@
 # TODO
 
+<!-- 1. [BUG] - Actual row set is being sorted, not just renderableRows... need to stop that. It's bad but it also prevents the "unsorted" state from being usable -->
+  <!-- 1. [TODO] - Make sort click cycle through 3 states (up, down, none) -->
+1. [BUG] - Grid not redrawing properly when switching between tutorials. It still has the grid body height from the previous tutorial.
+   1. This is due to a combination of grunt-ngdocs and ngAnimate. ngAnimate is leaving two "page" (or whatever) elements on the page at the
+      same time. Both have a main.css which include styles for the grid. Having the old one on there at the same time as the new one makes
+      it use the height from the old one when calculating the grid height... *** Can we switch to Dgeni? ***
 1. [BUG] - Menu icon is showing on other demos but does not function.
 1. [BUG] - Menu icon overlays menu text when column name is too long...
    1. [IDEA] - Can we shrink the size of the header-cell-contents div and make it text-overflow: ellipsis?
-1. [BUG] - Actual row set is being sorted, not just renderableRows... need to stop that. It's bad but it also prevents the "unsorted" state from being usable
+1. [TOFIX] - Menu icon vertical alignment off in IE11 (how does it look in FF?)
 1. [IDEA] - Refactor "menu" into its own directive so it's reusable for the grid menu as well as the column menu, or other things like 3rd party extensions.
+
 <!-- 1. [TODO] - Add clickable column menu icon -->
    <!-- 1. Needs to toggle menu on click. Right now it just opens it and leaves it open -->
-   1. When opening a second column's menu when the first is still open, both need to slide in/out rather than the element just popping over...
+   <!-- 1. When opening a second column's menu when the first is still open, both need to slide in/out rather than the element just popping over... -->
    <!-- 1. Make sure it doesn't interfere with column resize handles -->
    1. Make it show/hide based on enableColumnMenu options
    1. It needs to account for header canvas scrollLeft...
    1. It also needs to HIDE on canvas scroll...
-1. [TODO] - Make sort click cycle through 3 states (up, down, none)
-1. [TODO] - Make shift-click add/remove column from sort (shift key boolean property is on MouseEvent)
+   
 1. [NOTE] - Use "-webkit-text-stroke: 0.3px" on icon font to fix jaggies in Chrome on Windows
 1. [TODO] - Add a failing test for the IE9-11 column sorting hack (columnSorter.js, line 229)
 1. [TODO] - Kendo Grid shows the column menu positioned OUTSIDE the grid for the final column, but it doesn't flow outside the window.
@@ -21,6 +27,7 @@
 1. [BUG] - Header popping up when dragging to resize a column. Need to fire a COLUMN_DRAG_START event and cancel the long-click timeout on it
    1. Might need to make dragging and reordering columns watch for a minimum pixel delta before starting drag, so it doesn't always cancel long-clicks
 
+<!-- 1. [TODO] - Make shift-click add/remove column from sort (shift key boolean property is on MouseEvent) -->
 <!-- 1. [TODO] - Hide menu on click outside it -->
 <!-- 1. [IDEA] - Try grunt-fontello for making our own custom icon font, put font files and css in same output dir...  -->
     <!-- 1. Might need to only concatenate -codes.css file, and do our own .icon class -->

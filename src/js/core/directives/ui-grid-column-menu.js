@@ -112,13 +112,18 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
       $scope.sortColumn = function (event, dir) {
         event.stopPropagation();
 
-        $log.debug('sorting', dir);
-
         uiGridCtrl.grid.sortColumn($scope.col, dir, true)
           .then(function () {
             uiGridCtrl.refreshRows();
             self.hideMenu();
           });
+      };
+
+      $scope.unsortColumn = function () {
+        $scope.col.unsort();
+
+        uiGridCtrl.refreshRows();
+        self.hideMenu();
       };
     }
   };

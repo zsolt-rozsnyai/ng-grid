@@ -172,6 +172,7 @@ angular.module('ui.grid')
       }
     }
 
+    // Make a reference copy that we can alter (sort, etc)
     var renderableRows = self.processRowsProcessors(self.rows);
 
     self.setVisibleRows(renderableRows);
@@ -288,6 +289,9 @@ angular.module('ui.grid')
   Grid.prototype.processRowsProcessors = function(renderableRows) {
     var self = this;
 
+    // Create a deep copy of the rows so that we can safely sort them without altering grid.rows
+    renderableRows = angular.copy(renderableRows);
+
     var i = 0;
     var newRenderableRows;
     self.rowsProcessors.forEach(function (processor) {
@@ -303,6 +307,8 @@ angular.module('ui.grid')
 
       i++;
     });
+
+    renderableRows = null;
 
     return newRenderableRows;
   };

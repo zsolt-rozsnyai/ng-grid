@@ -9,6 +9,8 @@ UI-Grid allows you to sort rows. Just set the `enableSorting` flag in your grid 
   <file name="app.js">
     var app = angular.module('app', ['ngAnimate', 'ui.grid']);
 
+    console.log(angular.module('ngAnimate'));
+
     app.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
       $scope.gridOptions = {
         enableSorting: true
