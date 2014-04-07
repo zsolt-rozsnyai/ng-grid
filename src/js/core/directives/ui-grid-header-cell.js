@@ -81,7 +81,24 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
       $scope.toggleMenu = function($event) {
         $event.stopPropagation();
 
-        uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
+        // If the menu is already showing...
+        if (uiGridCtrl.columnMenuCtrl.shown) {
+          // ... and we're the column the menu is on...
+          if (uiGridCtrl.columnMenuCtrl.col === $scope.col) {
+            // ... hide it
+            uiGridCtrl.columnMenuCtrl.hideMenu();
+          }
+          // ... and we're NOT the column the menu is on
+          else {
+            // ... move the menu to our column
+            uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
+          }
+        }
+        // If the menu is NOT showing
+        else {
+          // ... show it on our column
+          uiGridCtrl.columnMenuCtrl.showMenu($scope.col, $elm);
+        }
       };
       
       // If this column is sortable, add a click event handler

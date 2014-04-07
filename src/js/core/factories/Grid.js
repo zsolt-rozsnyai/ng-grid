@@ -512,6 +512,9 @@ angular.module('ui.grid')
     if (typeof(directionOrAdd) === 'boolean') {
       add = directionOrAdd;
     }
+    else {
+      direction = directionOrAdd;
+    }
     
     if (!add) {
       self.resetColumnSortPriorities(column);

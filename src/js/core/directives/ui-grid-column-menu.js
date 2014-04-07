@@ -1,6 +1,6 @@
 (function(){
 
-angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants', function ($log, $timeout, $window, $document, gridUtil, uiGridConstants) {
+angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$window', '$document', '$injector', 'gridUtil', 'uiGridConstants', function ($log, $timeout, $window, $document, $injector, gridUtil, uiGridConstants) {
 
   var uiGridColumnMenu = {
     priority: 0,
@@ -13,16 +13,31 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
 
       var self = this;
 
+      // Store a reference to this link/controller in the main uiGrid controller
       uiGridCtrl.columnMenuCtrl = self;
+
+      // Save whether we're shown or not so the columns can check
+      self.shown = false;
 
       // Put asc and desc sort directions in scope
       $scope.asc = uiGridConstants.ASC;
       $scope.desc = uiGridConstants.DESC;
 
+      var inner = $elm[0].querySelectorAll('.inner');
+
+      var $animate;
+      try {
+        $animate = $injector.get('$animate');
+      }
+      catch (e) {
+        $log.info('$animate service not found (ngAnimate not add as a dependency?), menu animations will not occur');
+      }
+
       // Show the menu
       self.showMenu = function(column, $columnElement) {
         // Swap to this column
-        $scope.col = column;
+        //   note - store a reference to this column in 'self' so the columns can check whether they're the shown column or not
+        self.col = $scope.col = column;
 
         // Remove an existing document click handler
         $document.off('click', documentClick);
@@ -34,29 +49,46 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
         var height = gridUtil.elementHeight($columnElement, true);
         var width = gridUtil.elementWidth($columnElement, true);
 
-        $scope.menuShown = true;
+        // Flag for whether we're hidden for showing via $animate
+        var hidden = false;
 
         // Re-position the menu AFTER it's been shown, so we can calculate the width correctly.
-        $timeout(function() {
-          var inner = $elm[0].querySelectorAll('.inner');
+        function reposition() {
+          $timeout(function() {
+            if (hidden && $animate) {
+              $animate.removeClass(inner, 'ng-hide');
+              self.shown = $scope.menuShown = true;
+            }
 
-          var myWidth = gridUtil.elementWidth($elm, true);
+            var myWidth = gridUtil.elementWidth($elm, true);
 
-          // TODO(c0bra): use padding-left/padding-right based on document direction (ltr/rtl), place menu on proper side
-          // Get the column menu right padding
-          var paddingRight = parseInt($elm.css('padding-right'), 10);
+            // TODO(c0bra): use padding-left/padding-right based on document direction (ltr/rtl), place menu on proper side
+            // Get the column menu right padding
+            var paddingRight = parseInt($elm.css('padding-right'), 10);
 
-          $elm.css('left', (left + width - myWidth + paddingRight) + 'px');
-          $elm.css('top', (top + height) + 'px');
+            $elm.css('left', (left + width - myWidth + paddingRight) + 'px');
+            $elm.css('top', (top + height) + 'px');
 
-          // Hide the menu on a click on the document
-          $document.on('click', documentClick);
-        });
+            // Hide the menu on a click on the document
+            $document.on('click', documentClick);
+          });
+        }
+
+        if ($scope.menuShown && $animate) {
+          // Animate closing the menu on the current column, then animate it opening on the other column
+          $animate.addClass(inner, 'ng-hide', reposition);
+          hidden = true;
+        }
+        else {
+          self.shown = $scope.menuShown = true;
+          reposition();
+        }
       };
 
       // Hide the menu
       self.hideMenu = function() {
-        $scope.menuShown = false;
+        self.col = null;
+        self.shown = $scope.menuShown = false;
       };
 
       // Prevent clicks on the menu from bubbling up to the document and making it hide prematurely
@@ -81,6 +113,7 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
         event.stopPropagation();
 
         $log.debug('sorting', dir);
+
         uiGridCtrl.grid.sortColumn($scope.col, dir, true)
           .then(function () {
             uiGridCtrl.refreshRows();
