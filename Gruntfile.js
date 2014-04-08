@@ -111,13 +111,13 @@ module.exports = function(grunt) {
         // paths: ['/bower_components/bootstrap'],
         files: {
           // 'dist/release/<%= pkg.name %>.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/icon/icons.data.svg.css'],
-          'dist/release/<%= pkg.name %>.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/font/_ui-grid-codes.scss']
+          'dist/release/<%= pkg.name %>.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/font/ui-grid-codes.css']
         }
       },
       min: {
         files: {
           // 'dist/release/<%= pkg.name %>.min.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/icon/icons.data.svg.css']
-          'dist/release/<%= pkg.name %>.min.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/font/_ui-grid-codes.scss']
+          'dist/release/<%= pkg.name %>.min.css': ['src/less/main.less', 'src/features/*/less/**/*.less', '.tmp/font/ui-grid-codes.css']
         },
         options: {
           compress: true
