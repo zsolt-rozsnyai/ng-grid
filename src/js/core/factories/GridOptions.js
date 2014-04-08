@@ -52,7 +52,11 @@ angular.module('ui.grid')
     this.excessColumns = 4;
     this.horizontalScrollThreshold = 2;
 
+    // Sorting off by default
     this.enableSorting = false;
+
+    // Column menu can be used by default
+    this.enableColumnMenu = true;
 
     // Native scrolling on by default
     this.enableNativeScrolling = true;

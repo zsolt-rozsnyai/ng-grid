@@ -112,10 +112,10 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
           var mousedownTime = mousedownEndTime - mousedownStartTime;
 
           if (mousedownTime > mousedownTimeout) {
-            $log.debug('long click!');
+            // long click, handled above with mousedown
           }
           else {
-            $log.debug('short click!');
+            // short click
             handleClick(evt);
           }
         });
@@ -126,9 +126,6 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         });
       }
     }
-    // controller: ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
-      
-    // }]
   };
 
   return uiGridHeaderCell;

@@ -24,8 +24,7 @@ describe('uiGridHeaderCell', function () {
       grid = angular.element('<div style="width: 500px; height: 300px" ui-grid="gridOpts"></div>');
       
       $compile(grid)($scope);
-
-      $document[0].body.appendChild(grid[0]);
+      // $document[0].body.appendChild(grid[0]);
 
       $scope.$digest();
     };
@@ -33,9 +32,9 @@ describe('uiGridHeaderCell', function () {
     recompile();
   }));
 
-  afterEach(function() {
-    grid.remove();
-  });
+  // afterEach(function() {
+  //   grid.remove();
+  // });
 
   describe('column menu', function (){ 
     var headerCell1,
@@ -85,6 +84,17 @@ describe('uiGridHeaderCell', function () {
         
         expect(menu.hasClass('ng-hide')).toBe(true, 'column menu is hidden');        
       }));
+    });
+
+    describe('with enableColumnMenu off', function() {
+      it('should not be present', function () {
+        $scope.gridOpts.enableColumnMenu = false;
+        recompile();
+
+        menu = $(grid).find('.ui-grid-column-menu .inner');
+
+        expect(menu[0]).toBeUndefined('menu is undefined');
+      });
     });
   });
 

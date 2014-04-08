@@ -8,7 +8,8 @@
     events: {
       GRID_SCROLL: 'uiGridScroll',
       GRID_SCROLLING: 'uiGridScrolling',
-      COLUMN_MENU_SHOWN: 'uiGridColMenuShown'
+      COLUMN_MENU_SHOWN: 'uiGridColMenuShown',
+      ITEM_DRAGGING: 'uiGridItemDragStart' // For any item being dragged
     },
     // copied from http://www.lsauer.com/2011/08/javascript-keymap-keycodes-in-json.html
     keymap: {
