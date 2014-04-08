@@ -1,7 +1,7 @@
 (function(){
 
 angular.module('ui.grid')
-.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'columnSorter', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, columnSorter) {
+.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'rowSorter', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, rowSorter) {
 
 /**
    * @ngdoc function
@@ -469,7 +469,7 @@ angular.module('ui.grid')
   };
 
   Grid.prototype.sortByColumn = function sortByColumn(renderableRows) {
-    return columnSorter.sort(this, renderableRows, this.columns);
+    return rowSorter.sort(this, renderableRows, this.columns);
   };
 
   Grid.prototype.getCellValue = function getCellValue(row, col){

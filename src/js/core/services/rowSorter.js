@@ -2,7 +2,7 @@
 
 var module = angular.module('ui.grid');
 
-module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, uiGridConstants) {
+module.service('rowSorter', ['$parse', 'uiGridConstants', function ($parse, uiGridConstants) {
   var currencyRegexStr = 
     '(' +
     uiGridConstants.CURRENCY_SYMBOLS
@@ -13,7 +13,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   // /^[-+]?[£$¤¥]?[\d,.]+%?$/
   var numberStrRegex = new RegExp('^[-+]?' + currencyRegexStr + '[\\d,.]+' + currencyRegexStr + '%?$');
 
-  var columnSorter = {
+  var rowSorter = {
     // Cache of sorting functions. Once we create them, we don't want to keep re-doing it
     //   this takes a piece of data from the cell and tries to determine its type and what sorting
     //   function to use for it
@@ -21,32 +21,32 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   };
 
   // Guess which sort function to use on this item
-  columnSorter.guessSortFn = function guessSortFn(item) {
+  rowSorter.guessSortFn = function guessSortFn(item) {
     var itemType = typeof(item);
 
     // Check for numbers and booleans
     switch (itemType) {
       case "number":
-        return columnSorter.sortNumber;
+        return rowSorter.sortNumber;
       case "boolean":
-        return columnSorter.sortBool;
+        return rowSorter.sortBool;
       case "string":
         // if number string return number string sort fn. else return the str
-        return item.match(numberStrRegex) ? columnSorter.sortNumberStr : columnSorter.sortAlpha;
+        return item.match(numberStrRegex) ? rowSorter.sortNumberStr : rowSorter.sortAlpha;
       default:
         // Check if the item is a valid Date
         if (Object.prototype.toString.call(item) === '[object Date]') {
-          return columnSorter.sortDate;
+          return rowSorter.sortDate;
         }
         else {
           //finally just sort the basic sort...
-          return columnSorter.basicSort;
+          return rowSorter.basicSort;
         }
     }
   };
 
   // Basic sorting function
-  columnSorter.basicSort = function basicSort(a, b) {
+  rowSorter.basicSort = function basicSort(a, b) {
       if (a === b) {
           return 0;
       }
@@ -57,11 +57,11 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   };
 
   // Number sorting function
-  columnSorter.sortNumber = function sortNumber(a, b) {
+  rowSorter.sortNumber = function sortNumber(a, b) {
       return a - b;
   };
 
-  columnSorter.sortNumberStr = function sortNumberStr(a, b) {
+  rowSorter.sortNumberStr = function sortNumberStr(a, b) {
     var numA, // The parsed number form of 'a'
         numB, // The parsed number form of 'b'
         badA = false,
@@ -100,7 +100,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   };
 
   // String sorting function
-  columnSorter.sortAlpha = function sortAlpha(a, b) {
+  rowSorter.sortAlpha = function sortAlpha(a, b) {
     var strA = a.toLowerCase(),
         strB = b.toLowerCase();
 
@@ -108,7 +108,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   };
 
   // Date sorting function
-  columnSorter.sortDate = function sortDate(a, b) {
+  rowSorter.sortDate = function sortDate(a, b) {
     var timeA = a.getTime(),
         timeB = b.getTime();
 
@@ -116,7 +116,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
   };
 
   // Boolean sorting function
-  columnSorter.sortBool = function sortBool(a, b) {
+  rowSorter.sortBool = function sortBool(a, b) {
     if (a && b) {
       return 0;
     }
@@ -129,17 +129,17 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
     }
   };
 
-  columnSorter.getSortFn = function getSortFn(grid, col, rows) {
+  rowSorter.getSortFn = function getSortFn(grid, col, rows) {
     var sortFn, item;
 
     // See if we already figured out what to use to sort the column and have it in the cache
-    if (columnSorter.colSortFnCache[col.field]) {
-      sortFn = columnSorter.colSortFnCache[col.field];
+    if (rowSorter.colSortFnCache[col.field]) {
+      sortFn = rowSorter.colSortFnCache[col.field];
     }
     // If the column has its OWN sorting algorithm, use that
     else if (col.sortingAlgorithm !== undefined) {
       sortFn = col.sortingAlgorithm;
-      columnSorter.colSortFnCache[col.field] = col.sortingAlgorithm;
+      rowSorter.colSortFnCache[col.field] = col.sortingAlgorithm;
     }
     // Try and guess what sort function to use
     else {
@@ -156,24 +156,24 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
       var fieldValue = grid.getCellValue(row, col); // $parse(col.field)(row);
 
       // Guess the sort function
-      sortFn = columnSorter.guessSortFn(fieldValue);
+      sortFn = rowSorter.guessSortFn(fieldValue);
 
       // If we found a sort function, cache it
       if (sortFn) {
-        columnSorter.colSortFnCache[col.field] = sortFn;
+        rowSorter.colSortFnCache[col.field] = sortFn;
       }
       else {
         // We assign the alpha sort because anything that is null/undefined will never get passed to
         // the actual sorting function. It will get caught in our null check and returned to be sorted
         // down to the bottom
-        sortFn = columnSorter.sortAlpha;
+        sortFn = rowSorter.sortAlpha;
       }
     }
 
     return sortFn;
   };
 
-  columnSorter.sort = function columnSorterSort(grid, rows, columns) {
+  rowSorter.sort = function rowSorterSort(grid, rows, columns) {
     // first make sure we are even supposed to do work
     if (!rows) {
       return;
@@ -226,7 +226,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
     // Re-usable variables
     var col, direction;
 
-    // IE9-11 HACK.... the 'rows' variable would be empty where we call columnSorter.getSortFn(...) below. We have to use a separate reference
+    // IE9-11 HACK.... the 'rows' variable would be empty where we call rowSorter.getSortFn(...) below. We have to use a separate reference
     // var d = data.slice(0);
     var r = rows.slice(0);
 
@@ -241,7 +241,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
         col = sortCols[idx];
         direction = sortCols[idx].sort.direction;
 
-        sortFn = columnSorter.getSortFn(grid, col, r);
+        sortFn = rowSorter.getSortFn(grid, col, r);
         
         var propA = grid.getCellValue(rowA, col); // $parse(col.field)(rowA);
         var propB = grid.getCellValue(rowB, col); // $parse(col.field)(rowB);
@@ -275,7 +275,7 @@ module.service('columnSorter', ['$parse', 'uiGridConstants', function ($parse, u
     });
   };
 
-  return columnSorter;
+  return rowSorter;
 }]);
 
 })();

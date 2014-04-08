@@ -1,5 +1,9 @@
 # TODO
 
+# Row sorting
+1. [TODO] - Rename columnSorter to rowSorter. Duh.
+1. [TODO] - Make row builders and rows processors async with $q
+
 1. [IDEA] - Might need to make dragging and reordering columns watch for a minimum pixel delta before starting drag, so it doesn't always cancel long-clicks
 1. [BUG] - Grid not redrawing properly when switching between tutorials. It still has the grid body height from the previous tutorial.
    1. This is due to a combination of grunt-ngdocs and ngAnimate. ngAnimate is leaving two "page" (or whatever) elements on the page at the
@@ -24,11 +28,6 @@
 1. [TODO] - Add row filtering
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
 1. [TODO] - Add handling for sorting null values with columnDef sortingAlgorithm (PR #940)
-1. [TODO] - Rename columnSorter to rowSorter. Duh.
-
-# Row sorting
-
-1. [TODO] - Make row builders and rows processors async with $q
 
 # Cleanup
 
