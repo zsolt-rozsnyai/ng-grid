@@ -9,6 +9,8 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
     templateUrl: 'ui-grid/uiGridColumnMenu',
     replace: true,
     link: function ($scope, $elm, $attrs, uiGridCtrl) {
+      gridUtil.enableAnimations($elm);
+
       $scope.grid = uiGridCtrl.grid;
 
       var self = this;
@@ -42,9 +44,15 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
         // Remove an existing document click handler
         $document.off('click', documentClick);
 
-        // Reposition the menu below this column's element
+        /* Reposition the menu below this column's element */
         var left = $columnElement[0].offsetLeft;
         var top = $columnElement[0].offsetTop;
+
+        // Get the grid scrollLeft
+        var offset = 0;
+        if (uiGridCtrl.grid.options.offsetLeft) {
+          offset = uiGridCtrl.grid.options.offsetLeft;
+        }
 
         var height = gridUtil.elementHeight($columnElement, true);
         var width = gridUtil.elementWidth($columnElement, true);
@@ -66,7 +74,7 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
             // Get the column menu right padding
             var paddingRight = parseInt($elm.css('padding-right'), 10);
 
-            $elm.css('left', (left + width - myWidth + paddingRight) + 'px');
+            $elm.css('left', (left - offset + width - myWidth + paddingRight) + 'px');
             $elm.css('top', (top + height) + 'px');
 
             // Hide the menu on a click on the document
@@ -102,6 +110,10 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
       }
       
       $window.addEventListener('resize', self.hideMenu);
+
+      $scope.$on('$destroy', $scope.$on(uiGridConstants.events.GRID_SCROLL, function(evt, args) {
+        self.hideMenu();
+      }));
 
       $scope.$on('$destroy', function() {
         $window.removeEventListener('resize', self.hideMenu);

@@ -253,7 +253,7 @@ angular.module('ui.grid').directive('uiGrid',
   ]);
 
   //todo: move to separate file once Brian has finished committed work in progress
-  angular.module('ui.grid').directive('uiGridCell', ['$compile', 'uiGridConstants', '$log', '$parse', function ($compile, uiGridConstants, $log, $parse) {
+  angular.module('ui.grid').directive('uiGridCell', ['$compile', '$log', '$parse', 'gridUtil', 'uiGridConstants', function ($compile, $log, $parse, gridUtil, uiGridConstants) {
     var uiGridCell = {
       priority: 0,
       scope: false,

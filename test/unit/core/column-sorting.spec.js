@@ -158,6 +158,7 @@ describe('columnSorter', function() {
 
   });
 
+  // TODO(c0bra) ...
   // it("should use the column's specified sorting algorithm if it has one", function () {
       
   // });

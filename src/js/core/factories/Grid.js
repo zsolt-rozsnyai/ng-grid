@@ -289,13 +289,12 @@ angular.module('ui.grid')
   Grid.prototype.processRowsProcessors = function(renderableRows) {
     var self = this;
 
-    // Create a deep copy of the rows so that we can safely sort them without altering grid.rows
-    renderableRows = angular.copy(renderableRows);
+    // Create a shallow copy of the rows so that we can safely sort them without altering the original grid.rows sort order
+    var myRenderableRows = renderableRows.slice(0);
 
     var i = 0;
-    var newRenderableRows;
     self.rowsProcessors.forEach(function (processor) {
-      newRenderableRows = processor.call(self, renderableRows, self.columns);
+      myRenderableRows = processor.call(self, myRenderableRows, self.columns);
 
       if (! renderableRows) {
         throw "Processor at index " + i + " did not return a set of renderable rows";
@@ -308,9 +307,7 @@ angular.module('ui.grid')
       i++;
     });
 
-    renderableRows = null;
-
-    return newRenderableRows;
+    return myRenderableRows;
   };
 
   Grid.prototype.setVisibleRows = function(rows) {

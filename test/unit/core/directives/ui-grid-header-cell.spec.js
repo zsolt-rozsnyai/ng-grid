@@ -47,7 +47,6 @@ describe('uiGridHeaderCell', function () {
         headerCell2 = $(grid).find('.ui-grid-header-cell:nth(1)');
 
         menu = $(grid).find('.ui-grid-column-menu .inner');
-        // menu2 = $(grid).find('.ui-grid-column-menu:nth(1) .inner');
       });
 
     describe('showing a menu with long-click', function () {
