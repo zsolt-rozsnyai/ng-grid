@@ -1,8 +1,9 @@
 # TODO
 
 # Row sorting
-1. [TODO] - Rename columnSorter to rowSorter. Duh.
-1. [TODO] - Make row builders and rows processors async with $q
+1. [BUG] - Sorting icon gets hidden/removed when column is resized really small and then big again.
+1. [TODO] - Make row builders async with $q
+1. [TODO] - Make sorting functionality overrideable by custom external functions? Or just make user create their own rowProcessor?
 
 1. [IDEA] - Might need to make dragging and reordering columns watch for a minimum pixel delta before starting drag, so it doesn't always cancel long-clicks
 1. [BUG] - Grid not redrawing properly when switching between tutorials. It still has the grid body height from the previous tutorial.

@@ -91,19 +91,20 @@
 
             //wrap data in a gridRow
             $log.debug('Modifying rows');
-            self.grid.modifyRows(n);
+            self.grid.modifyRows(n)
+              .then(function () {
+                //todo: move this to the ui-body-directive and define how we handle ordered event registration
+                if (self.viewport) {
+                  var scrollTop = self.viewport[0].scrollTop;
+                  var scrollLeft = self.viewport[0].scrollLeft;
+                  self.adjustScrollVertical(scrollTop, 0, true);
+                  self.adjustScrollHorizontal(scrollLeft, 0, true);
+                }
 
-            //todo: move this to the ui-body-directive and define how we handle ordered event registration
-            if (self.viewport) {
-              var scrollTop = self.viewport[0].scrollTop;
-              var scrollLeft = self.viewport[0].scrollLeft;
-              self.adjustScrollVertical(scrollTop, 0, true);
-              self.adjustScrollHorizontal(scrollLeft, 0, true);
-            }
-
-            $scope.$evalAsync(function() {
-              self.refreshCanvas(true);
-            });
+                $scope.$evalAsync(function() {
+                  self.refreshCanvas(true);
+                });
+              });
           });
         }
       }
@@ -149,13 +150,14 @@
       };
 
       $scope.grid.refreshRows = self.refreshRows = function () {
-        var renderableRows = self.grid.processRowsProcessors(self.grid.rows);
+        self.grid.processRowsProcessors(self.grid.rows)
+          .then(function (renderableRows) {
+            self.grid.setVisibleRows(renderableRows);
 
-        self.grid.setVisibleRows(renderableRows);
+            self.redrawRows();
 
-        self.redrawRows();
-
-        self.refreshCanvas();
+            self.refreshCanvas();
+          });
       };
 
       /* Sorting Methods */

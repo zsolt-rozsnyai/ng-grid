@@ -268,6 +268,7 @@ module.exports = function(grunt) {
           require: false,
 
           /* Jasmine */
+          jasmine: false,
           after: false,
           afterEach: false,
           before: false,
@@ -286,7 +287,8 @@ module.exports = function(grunt) {
           waits: false,
           waitsFor: false,
           xit: false,
-          xdescribe: false
+          xdescribe: false,
+          spyOn: false
         }
       },
       gruntfile: {

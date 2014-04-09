@@ -173,9 +173,13 @@ angular.module('ui.grid')
     }
 
     // Make a reference copy that we can alter (sort, etc)
-    var renderableRows = self.processRowsProcessors(self.rows);
+    // var renderableRows = self.processRowsProcessors(self.rows);
+    return $q.when(self.processRowsProcessors(self.rows))
+      .then(function (renderableRows) {
+        return self.setVisibleRows(renderableRows);
+      });
 
-    self.setVisibleRows(renderableRows);
+    // self.setVisibleRows(renderableRows);
   };
 
   /**
@@ -260,6 +264,10 @@ angular.module('ui.grid')
      modified.
    */
   Grid.prototype.registerRowsProcessor = function(processor) {
+    if (! angular.isFunction(processor)) {
+      throw "Attempt to register non-function rows processor: processor";
+    }
+
     this.rowsProcessors.push(processor);
   };
 
@@ -274,7 +282,7 @@ angular.module('ui.grid')
     var idx = this.rowsProcessors.indexOf(processor);
 
     if (typeof(idx) !== 'undefined' && idx !== undefined) {
-      this.rowsProcessors.slice(idx, 1);
+      this.rowsProcessors.splice(idx, 1);
     }
   };
   
@@ -291,23 +299,73 @@ angular.module('ui.grid')
 
     // Create a shallow copy of the rows so that we can safely sort them without altering the original grid.rows sort order
     var myRenderableRows = renderableRows.slice(0);
+    
+    // self.rowsProcessors.forEach(function (processor) {
+    //   myRenderableRows = processor.call(self, myRenderableRows, self.columns);
 
+    //   if (! renderableRows) {
+    //     throw "Processor at index " + i + " did not return a set of renderable rows";
+    //   }
+
+    //   if (!angular.isArray(renderableRows)) {
+    //     throw "Processor at index " + i + " did not return an array";
+    //   }
+
+    //   i++;
+    // });
+
+    // Return myRenderableRows with no processing if we have no rows processors 
+    if (self.rowsProcessors.length === 0) {
+      return $q.when(myRenderableRows);
+    }
+  
+    // Counter for iterating through rows processors
     var i = 0;
-    self.rowsProcessors.forEach(function (processor) {
-      myRenderableRows = processor.call(self, myRenderableRows, self.columns);
+    
+    // Promise for when we're done with all the processors
+    var finished = $q.defer();
 
-      if (! renderableRows) {
-        throw "Processor at index " + i + " did not return a set of renderable rows";
-      }
+    // This function will call the processor in self.rowsProcessors at index 'i', and then
+    //   when done will call the next processor in the list, using the output from the processor
+    //   at i as the argument for 'renderedRowsToProcess' on the next iteration.
+    //  
+    //   If we're at the end of the list of processors, we resolve our 'finished' callback with
+    //   the result.
+    function startProcessor(i, renderedRowsToProcess) {
+      // Get the processor at 'i'
+      var processor = self.rowsProcessors[i];
 
-      if (!angular.isArray(renderableRows)) {
-        throw "Processor at index " + i + " did not return an array";
-      }
+      // Call the processor, passing in the rows to process and the current columns
+      //   (note: it's wrapped in $q.when() in case the processor does not return a promise)
+      return $q.when( processor.call(self, renderedRowsToProcess, self.columns) )
+        .then(function(processedRows) {
+          // Check for errors
+          if (! processedRows) {
+            throw "Processor at index " + i + " did not return a set of renderable rows";
+          }
 
-      i++;
-    });
+          if (!angular.isArray(processedRows)) {
+            throw "Processor at index " + i + " did not return an array";
+          }
 
-    return myRenderableRows;
+          // Processor is done, increment the counter
+          i++;
+
+          // If we're not done with the processors, call the next one
+          if (i <= self.rowsProcessors.length - 1) {
+            return startProcessor(i, processedRows);
+          }
+          // We're done! Resolve the 'finished' promise
+          else {
+            finished.resolve(processedRows);
+          }
+        });
+    }
+
+    // Start on the first processor
+    startProcessor(0, myRenderableRows);
+    
+    return finished.promise;
   };
 
   Grid.prototype.setVisibleRows = function(rows) {

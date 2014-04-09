@@ -7,8 +7,8 @@
    *  @description factory to return dom specific instances of a grid
    *
    */
-  angular.module('ui.grid').service('gridClassFactory', ['gridUtil', '$q', '$templateCache', 'uiGridConstants', '$log', 'Grid', 'GridColumn', 'GridRow', 'columnSorter',
-    function (gridUtil, $q, $templateCache, uiGridConstants, $log, Grid, GridColumn, GridRow, columnSorter) {
+  angular.module('ui.grid').service('gridClassFactory', ['gridUtil', '$q', '$templateCache', 'uiGridConstants', '$log', 'Grid', 'GridColumn', 'GridRow',
+    function (gridUtil, $q, $templateCache, uiGridConstants, $log, Grid, GridColumn, GridRow) {
 
       var service = {
         /**
