@@ -113,7 +113,7 @@ angular.module('ui.grid')
 
     self.sortingAlgorithm = colDef.sortingAlgorithm;
 
-    self.sort = {};
+    self.sort = (typeof(self.sort) !== 'undefined') ? self.sort : {};
   };
 
   return GridColumn;

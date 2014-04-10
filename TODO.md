@@ -1,7 +1,7 @@
 # TODO
 
 # Row sorting
-1. [BUG] - Sorting icon gets hidden/removed when column is resized really small and then big again.
+1. [IDEA] - Try building ngdocs with dgeni
 1. [TODO] - Make row builders async with $q
 1. [TODO] - Make sorting functionality overrideable by custom external functions? Or just make user create their own rowProcessor?
 
@@ -39,6 +39,7 @@
 # Native scrolling
 
 1. [BUG] - Touch event deceleration goes backwards when scrolling up, but only with small amounts.
+  1. [BUG] - Horizontal scrolling when emulating a touch device is weird too, scroll between grid canvas and header canvas is offset.
 1. [TODO] - Take a look at Hamster.js for normalizing mouse wheel events, test on MacAir.
 
 # Memory Issues

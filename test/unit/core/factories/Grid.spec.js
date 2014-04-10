@@ -124,8 +124,6 @@ describe('Grid factory', function () {
     });
 
     it('processRowsProcessors should return a shallow copy of grid.rows', function () {
-      dump(grid.rowsProcessors);
-
       runs(runProcs);
 
       runs(function() {
