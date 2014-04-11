@@ -1,11 +1,17 @@
 (function(){
 
+/**
+ * @ngdoc service
+ * @name GridRow
+ * @description
+ *
+ */
 angular.module('ui.grid')
 .factory('GridRow', ['gridUtil', function(gridUtil) {
 
    /**
    * @ngdoc function
-   * @name ui.grid.class:GridRow
+   * @name GridRow#GridRow
    * @description Wrapper for the GridOptions.data rows.  Allows for needed properties and functions
    * to be assigned to a grid row
    * @param {object} entity the array item from GridOptions.data
@@ -21,8 +27,8 @@ angular.module('ui.grid')
 
   /**
    * @ngdoc function
-   * @name getQualifiedColField
-   * @methodOf ui.grid.class:GridRow
+   * @name GridRow#getQualifiedColField
+   
    * @description returns the qualified field name as it exists on scope
    * ie: row.entity.fieldA
    * @param {GridCol} col column instance

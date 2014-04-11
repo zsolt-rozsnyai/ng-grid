@@ -1,5 +1,11 @@
 (function () {
   'use strict';
+
+  /**
+   * @ngdoc module
+   * @name ui.grid.cellNav
+   * @description
+   */
   var module = angular.module('ui.grid.cellNav', ['ui.grid']);
 
   function RowCol(row, col) {
@@ -32,7 +38,7 @@
         /**
          * @ngdoc service
          * @name getDirection
-         * @methodOf ui.grid.cellNav.service:uiGridCellNavService
+         
          * @description  determines which direction to for a given keyDown event
          * @returns {uiGridCellNavConstants.direction} direction
          */
@@ -62,7 +68,7 @@
         /**
          * @ngdoc service
          * @name getNextRowCol
-         * @methodOf ui.grid.cellNav.service:uiGridCellNavService
+         
          * @description  returns the next row and column for a given direction
          * columns that are not focusable are skipped
          * @param {object} direction navigation direction
@@ -191,7 +197,7 @@
         /**
          * @ngdoc service
          * @name cellNavColumnBuilder
-         * @methodOf ui.grid.cellNav.service:uiGridCellNavService
+         
          * @description columnBuilder function that adds cell navigation properties to grid column
          * @returns {promise} promise that will load any needed templates when resolved
          */

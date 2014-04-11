@@ -1,8 +1,8 @@
 (function () {
   'use strict';
   /**
-   *  @ngdoc object
-   *  @name ui.grid.service:gridClassFactory
+   *  @ngdoc service
+   *  @name gridClassFactory
    *
    *  @description factory to return dom specific instances of a grid
    *
@@ -13,8 +13,8 @@
       var service = {
         /**
          * @ngdoc method
-         * @name createGrid
-         * @methodOf ui.grid.service:gridClassFactory
+         * @name gridClassFactory#createGrid
+         
          * @description Creates a new grid instance. Each instance will have a unique id
          * @returns {Grid} grid
          */
@@ -33,8 +33,8 @@
 
         /**
          * @ngdoc function
-         * @name defaultColumnBuilder
-         * @methodOf ui.grid.service:gridClassFactory
+         * @name gridClassFactory#defaultColumnBuilder
+         
          * @description Processes designTime column definitions and applies them to col for the
          *              core grid features
          * @param {object} colDef reference to column definition

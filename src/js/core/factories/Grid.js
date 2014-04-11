@@ -1,5 +1,11 @@
 (function(){
 
+/**
+ * @ngdoc module
+ * @name ui.grid
+ * @description
+ * Core grid class
+ */
 angular.module('ui.grid')
 .factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'rowSorter', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, rowSorter) {
 
@@ -45,7 +51,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name registerColumnBuilder
-   * @methodOf ui.grid.class:Grid
+   
    * @description When the build creates columns from column definitions, the columnbuilders will be called to add
    * additional properties to the column.
    * @param {function(colDef, col, gridOptions)} columnsProcessor function to be called
@@ -57,7 +63,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name registerRowBuilder
-   * @methodOf ui.grid.class:Grid
+   
    * @description When the build creates rows from gridOptions.data, the rowBuilders will be called to add
    * additional properties to the row.
    * @param {function(colDef, col, gridOptions)} columnsProcessor function to be called
@@ -69,7 +75,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name getColumn
-   * @methodOf ui.grid.class:Grid
+   
    * @description returns a grid column for the column name
    * @param {string} name column name
    */
@@ -83,7 +89,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name buildColumns
-   * @methodOf ui.grid.class:Grid
+   
    * @description creates GridColumn objects from the columnDefinition.  Calls each registered
    * columnBuilder to further process the column
    * @returns {Promise} a promise to load any needed column resources
@@ -117,7 +123,7 @@ angular.module('ui.grid')
   /**
    * undocumented function
    * @name preprocessColDef
-   * @methodOf ui.grid.class:Grid
+   
    * @description defaults the name property from field to maintain backwards compatibility with 2.x
    * validates that name or field is present
    */
@@ -136,7 +142,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name modifyRows
-   * @methodOf ui.grid.class:Grid
+   
    * @description creates or removes GridRow objects from the newRawData array.  Calls each registered
    * rowBuilder to further process the row
    *
@@ -185,7 +191,7 @@ angular.module('ui.grid')
   /**
    * Private Undocumented Method
    * @name addRows
-   * @methodOf ui.grid.class:Grid
+   
    * @description adds the newRawData array of rows to the grid and calls all registered
    * rowBuilders. this keyword will reference the grid
    */
@@ -200,7 +206,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name processRowBuilders
-   * @methodOf ui.grid.class:Grid
+   
    * @description processes all RowBuilders for the gridRow
    * @param {GridRow} gridRow reference to gridRow
    * @returns {GridRow} the gridRow with all additional behavior added
@@ -218,7 +224,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name registerStyleComputation
-   * @methodOf ui.grid.class:Grid
+   
    * @description registered a styleComputation function
    * @param {function($scope)} styleComputation function
    */
@@ -253,9 +259,9 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name registerRowsProcessor
-   * @methodOf ui.grid.class:Grid
+   
    * @param {function(renderableRows)} rows processor function
-   * @returns {Array[GridRow]} Updated renderable rows
+   * @returns {Array.<GridRow>} Updated renderable rows as an array of GridRows
    * @description
 
      Register a "rows processor" function. When the rows are updated,
@@ -274,7 +280,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name removeRowsProcessor
-   * @methodOf ui.grid.class:Grid
+   
    * @param {function(renderableRows)} rows processor function
    * @description Remove a registered rows processor
    */
@@ -289,9 +295,9 @@ angular.module('ui.grid')
   /**
    * Private Undocumented Method
    * @name processRowsProcessors
-   * @methodOf ui.grid.class:Grid
-   * @param {Array[GridRow]} The array of "renderable" rows
-   * @param {Array[GridColumn]} The array of columns
+   
+   * @param {Array.<GridRow>} The array of "renderable" rows
+   * @param {Array.<GridColumn>} The array of columns
    * @description Run all the registered rows processors on the array of renderable rows
    */
   Grid.prototype.processRowsProcessors = function(renderableRows) {
@@ -398,7 +404,7 @@ angular.module('ui.grid')
   /**
    * @ngdoc function
    * @name buildStyles
-   * @methodOf ui.grid.class:Grid
+   
    * @description calls each styleComputation function
    */
   Grid.prototype.buildStyles = function ($scope) {

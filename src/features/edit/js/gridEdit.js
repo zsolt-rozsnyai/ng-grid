@@ -2,11 +2,11 @@
   'use strict';
 
   /**
-   * @ngdoc overview
+   * @ngdoc module
    * @name ui.grid.edit
    * @description
    *
-   *  # ui.grid.edit
+   * # ui.grid.edit
    * This module provides cell editing capability to ui.grid. The goal was to emulate keying data in a spreadsheet via
    * a keyboard.
    * <br/>
@@ -16,7 +16,6 @@
    *
    * <div doc-module-components="ui.grid.edit"></div>
    */
-
   var module = angular.module('ui.grid.edit', ['ui.grid']);
 
   /**
@@ -50,10 +49,10 @@
         /**
          * @ngdoc service
          * @name isStartEditKey
-         * @methodOf ui.grid.edit.service:uiGridEditService
+         
          * @description  Determines if a keypress should start editing.  Decorate this service to override with your
          * own key events.  See service decorator in angular docs.
-         * @parm {Event} evt keydown event
+         * @param {Event} evt keydown event
          * @returns {boolean} true if an edit should start
          */
         isStartEditKey: function (evt) {
@@ -77,7 +76,7 @@
         /**
          * @ngdoc service
          * @name editColumnBuilder
-         * @methodOf ui.grid.edit.service:uiGridEditService
+         
          * @description columnBuilder function that adds edit properties to grid column
          * @returns {promise} promise that will load any needed templates when resolved
          */

@@ -127,7 +127,7 @@ function getWidthOrHeight( elem, name, extra ) {
 
 /**
  *  @ngdoc service
- *  @name ui.grid.service:GridUtil
+ *  @name gridUtil
  *  
  *  @description Grid utility functions
  */
@@ -136,8 +136,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
      * @ngdoc method
-     * @name readableColumnName
-     * @methodOf ui.grid.service:GridUtil
+     * @name gridUtil#readableColumnName
+     
      *
      * @param {string} columnName Column name as a string
      * @returns {string} Column name appropriately capitalized and split apart
@@ -188,8 +188,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
      * @ngdoc method
-     * @name getColumnsFromData
-     * @methodOf ui.grid.service:GridUtil
+     * @name gridUtil#getColumnsFromData
+     
      * @description Return a list of column names, given a data set
      *
      * @param {string} data Data array for grid
@@ -234,8 +234,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
      * @ngdoc method
-     * @name newId
-     * @methodOf ui.grid.service:GridUtil
+     * @name gridUtil#newId
+     
      * @description Return a unique ID string
      *
      * @returns {string} Unique string
@@ -257,8 +257,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
      * @ngdoc method
-     * @name getTemplate
-     * @methodOf ui.grid.service:GridUtil
+     * @name gridUtil#getTemplate
+     
      * @description Get's template from Url
      *
      * @returns {object} a promise resolving to template contents
@@ -284,8 +284,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
     * @ngdoc method
-    * @name elementWidth
-    * @methodOf ui.grid.service:GridUtil
+    * @name gridUtil#elementWidth
+    
     *
     * @param {element} element DOM element
     * @param {string} [extra] Optional modifier for calculation. Use 'margin' to account for margins on element
@@ -298,8 +298,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
     * @ngdoc method
-    * @name elementHeight
-    * @methodOf ui.grid.service:GridUtil
+    * @name gridUtil#elementHeight
+    
     *
     * @param {element} element DOM element
     * @param {string} [extra] Optional modifier for calculation. Use 'margin' to account for margins on element
@@ -375,8 +375,8 @@ module.service('gridUtil', ['$window', '$document', '$http', '$templateCache', '
 
     /**
     * @ngdoc method
-    * @name normalizeWheelEvent
-    * @methodOf ui.grid.service:GridUtil
+    * @name gridUtil#normalizeWheelEvent
+    
     *
     * @param {event} event A mouse wheel event
     *

@@ -1,5 +1,10 @@
 (function(){
 
+/**
+ * @ngdoc service
+ * @name GridOptions
+ *
+ */
 angular.module('ui.grid')
 .factory('GridOptions', [function() {
 
@@ -14,7 +19,7 @@ angular.module('ui.grid')
     /**
      * @ngdoc object
      * @name data
-     * @propertyOf  ui.grid.class:GridOptions
+     
      * @description Array of data to be rendered to grid.  Array can contain complex objects
      */
     this.data = [];
@@ -22,7 +27,7 @@ angular.module('ui.grid')
     /**
      * @ngdoc object
      * @name columnDefs
-     * @propertyOf  ui.grid.class:GridOptions
+     
      * @description (optional) Array of columnDef objects.  Only required property is name.
      * _field property can be used in place of name for backwards compatibilty with 2.x_
      *  @example
@@ -73,7 +78,7 @@ angular.module('ui.grid')
     /**
      * @ngdoc function
      * @name rowEquality
-     * @methodOf ui.grid.class:GridOptions
+     
      * @description By default, rows are compared using object equality.  This option can be overridden
      * to compare on any data item property or function
      * @param {object} entityA First Data Item to compare
