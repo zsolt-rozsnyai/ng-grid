@@ -1,6 +1,6 @@
-
-describe('row filtering', function() {
-  var grid, $scope, $compile, recompile;
+ddescribe('rowSearcher', function() {
+  var grid, $scope, $compile, recompile,
+      rows, columns, rowSearcher, uiGridConstants;
 
   var data = [
     { "name": "Ethel Price", "gender": "female", "company": "Enersol" },
@@ -11,32 +11,62 @@ describe('row filtering', function() {
 
   beforeEach(module('ui.grid'));
 
-  beforeEach(inject(function (_$compile_, $rootScope) {
+  beforeEach(inject(function (_$compile_, $rootScope, _rowSearcher_, Grid, GridRow, GridColumn, _uiGridConstants_) {
     $scope = $rootScope;
-    $compile = _$compile_;
+    rowSearcher = _rowSearcher_;
+    uiGridConstants = _uiGridConstants_;
 
-    $scope.gridOpts = {
-      data: data
-    };
+    // $compile = _$compile_;
 
-    recompile = function () {
-      grid = angular.element('<div style="width: 500px; height: 300px" ui-grid="gridOpts"></div>');
-      // document.body.appendChild(grid[0]);
-      $compile(grid)($scope);
-      $scope.$digest();
-    };
+    // $scope.gridOpts = {
+    //   data: data
+    // };
 
-    recompile();
+    // recompile = function () {
+    //   grid = angular.element('<div style="width: 500px; height: 300px" ui-grid="gridOpts"></div>');
+    //   // document.body.appendChild(grid[0]);
+    //   $compile(grid)($scope);
+    //   $scope.$digest();
+    // };
+
+    // recompile();
+
+    grid = new Grid({
+        id: 1,
+        enableFiltering: true
+    });
+
+    rows = grid.rows = [
+      new GridRow({ name: 'Bill' }, 0),
+      new GridRow({ name: 'Frank' }, 1)
+    ];
+
+    columns = grid.columns = [
+      new GridColumn({ name: 'name' }, 0)
+    ];
   }));
+
+  function setFilter(column, term, condition) {
+    column.filters = [];
+    column.filters.push({
+      term: term,
+      condition: condition
+    });
+  }
 
   afterEach(function () {
     // angular.element(grid).remove();
     grid = null;
   });
 
-  describe('blarg', function () {
-    it('yargh!', function () {
-      
+  describe('with one column filtered', function () {
+    it('should run the search', function () {
+      setFilter(columns[0], 'il', uiGridConstants.filter.CONTAINS);
+
+      var ret = rowSearcher.search(grid, rows, columns);
+
+      expect(ret[0].visible).toBe(true);
+      expect(ret[1].visible).toBe(false);
     });
   });
 

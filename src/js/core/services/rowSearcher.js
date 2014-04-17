@@ -50,8 +50,9 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
    */
   rowSearcher.searchColumn = function searchColumn(grid, row, column, termCache) {
     if (typeof(column.filters) !== 'undefined' && column.filters && column.filters.length > 0) {
-      var i = 0;
-      column.filters.forEach(function (filter) {
+      for (var i in column.filters) {
+        var filter = column.filters[i];
+
         /*
           filter: {
             term: 'blah', // Search term to search for, could be a string, integer, etc.
@@ -90,10 +91,16 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
           }
           else {
             containsRE = new RegExp(term, regexpFlags);
+
+            if (!termCache[column.name]) {
+              termCache[column.name] = [];
+            }
             termCache[column.name][i] = containsRE;
           }
 
-          return containsRE.test(value);
+          if (! containsRE.test(value)) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.EXACT) {
           var exactRE;
@@ -102,29 +109,45 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
           }
           else {
             exactRE = new RegExp('^' + term + '$', regexpFlags);
+
+            if (!termCache[column.name]) {
+              termCache[column.name] = [];
+            }
             termCache[column.name][i] = exactRE;
           }
 
-          return exactRE.test(value);
+          if (! exactRE.test(value)) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.GREATER_THAN) {
-          return value > term;
+          if (value <= term) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.GREATER_THAN_OR_EQUAL) {
-          return value >= term; 
+          if (value < term) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.LESS_THAN) {
-          return value < term;  
+          if (value >= term) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.LESS_THAN_OR_EQUAL) {
-          return value <= term;   
+          if (value > term) {
+            return false;
+          }
         }
         else if (filter.condition === uiGridConstants.filter.NOT_EQUAL) {
-          return angular.equals(value, term);
+          if (! angular.equals(value, term)) {
+            return false;
+          }
         }
+      }
 
-        i++;
-      });
+      return true;
     }
     else {
       // No filter conditions, default to true
@@ -153,20 +176,20 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
     // Build filtered column list
     var filterCols = [];
     columns.forEach(function (col) {
-      if (col.filters && typeof(col.filters.term) !== 'undefined') {
+      if (typeof(col.filters) !== 'undefined' && col.filters.length > 0) {
         filterCols.push(col);
       }
     });
 
     if (filterCols.length > 0) {
       rows.forEach(function (row) {
-        var matchesAllTerms = true;
+        var matchesAllColumns = true;
 
         for (var i in filterCols) {
           var col = filterCols[0];
 
           if (! rowSearcher.searchColumn(grid, row, col, termCache)) {
-            matchesAllTerms = false;
+            matchesAllColumns = false;
 
             // Stop processing other terms
             break;
@@ -174,8 +197,11 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
         }
 
         // Row doesn't match all the terms, don't display it
-        if (!matchesAllTerms) {
+        if (!matchesAllColumns) {
           row.visible = false;
+        }
+        else {
+          row.visible = true;
         }
       });
     }

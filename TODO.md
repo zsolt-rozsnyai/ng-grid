@@ -2,6 +2,7 @@
 
 # CURRENT (row filtering)
 
+1. [HMM] - Does rowsProcessor need to reset .visible on all the rows BEFORE the rowsProcessors get ran?
 1. Column filter needs to catch enter key on input
 
 1. [BUG] - i18n causes an exception if a given value is not present.
