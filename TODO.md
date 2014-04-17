@@ -4,10 +4,10 @@
 
 1. [TODO] - Does rowsProcessors make sense for external sorting??? It would be downstream from the rows being added/modified, and would ITSELF be modifying the rows...
   1. Would probably be an infinite loop. External sorting needs to be able to hook in further upstream.
+  1. Sorting a column prompts a call to refreshRows(). Could we have a hook in there to run BEFORE rowsProcessors?
 
 1. [TODO] - Do rows processors need to be able to modify the count of of rows? As it is the documentation says the count needs to stay the same... but searching would affect that
 
-1. [BUG] -  Do we need to validate passed in grid 'id' property to make sure it can be in a CSS rule?
 1. [IDEA] - Hook the column menu button into the menu it activates so it can show/hide depending on the number of items it will show. Can we do that?
   1. If sorting is enabled or the user / extension has supplied extra menu items, show the menu button. Otherwise don't show it.
   1. We'll need a way to separate extension menu items from user menu items so the user doesn't override them.

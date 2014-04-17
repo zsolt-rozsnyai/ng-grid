@@ -35,6 +35,13 @@ angular.module('ui.grid').directive('uiGridHeaderCell', ['$log', '$timeout', '$w
         $scope.sortable = false;
       }
 
+      if (uiGridCtrl.grid.options.enableFiltering && $scope.col.enableFiltering) {
+        $scope.filterable = true;
+      }
+      else {
+        $scope.filterable = false;
+      }
+
       function handleClick(evt) {
         // If the shift key is being held down, add this column to the sort
         var add = false;

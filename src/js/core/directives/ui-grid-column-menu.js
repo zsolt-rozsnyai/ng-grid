@@ -41,8 +41,34 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
           return false;
         }
       }
+
+      function filterable() {
+        if (uiGridCtrl.grid.options.enableFiltering && typeof($scope.col) !== 'undefined' && $scope.col && $scope.col.enableFiltering) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
       
       var defaultMenuItems = [
+        // Column filter input
+        {
+          title: i18nService.get().filter.search,
+          templateUrl: 'ui-grid/uiGridColumnFilter.html'
+          action: function($event) {
+            $event.stopPropagation();
+            $scope.filterColumn($event);
+          },
+          cancel: function ($event) {
+            $event.stopPropagation();
+
+            $scope.col.filter = {};
+          },
+          shown: function () {
+            return filterable();
+          }
+        },
         {
           title: i18nService.get().sort.ascending,
           icon: 'ui-grid-icon-sort-alt-up',

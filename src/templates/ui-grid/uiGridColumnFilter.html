@@ -1,0 +1,9 @@
+<li class="ui-grid-menu-item" ng-show="itemShown()">
+  <input type="text" ng-model="item.model" />
+  <button type="button" class="ui-grid-button" ng-click="item.action($event)">
+    <i class="ui-grid-icon-search">&nbsp;</i>
+  </button>
+  <button type="button" class="ui-grid-button" ng-click="item.cancel($event)">
+    <i class="ui-grid-icon-cancel">&nbsp;</i>
+  </button>
+</li>

@@ -1,7 +1,7 @@
 (function(){
 
 angular.module('ui.grid')
-.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'rowSorter', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, rowSorter) {
+.factory('Grid', ['$log', '$q', '$parse', 'gridUtil', 'uiGridConstants', 'GridOptions', 'GridColumn', 'GridRow', 'rowSorter', 'rowSearcher', function($log, $q, $parse, gridUtil, uiGridConstants, GridOptions, GridColumn, GridRow, rowSorter, rowSearcher) {
 
 /**
    * @ngdoc function
@@ -12,6 +12,12 @@ angular.module('ui.grid')
    */
   var Grid = function (options) {
     // Get the id out of the options, then remove it
+    if (typeof(options.id) !== 'undefined' && options.id) {
+      if (! /^[_a-zA-Z0-9-]+$/.test(options.id)) {
+        throw new Error("Grid id '" + options.id + '" is invalid. It must follow CSS selector syntax rules.');
+      }
+    }
+
     this.id = options.id;
     delete options.id;
 
@@ -179,15 +185,11 @@ angular.module('ui.grid')
         self.rows.splice( self.rows.indexOf(deletedRows[i] ), 1 );
       }
     }
-
-    // Make a reference copy that we can alter (sort, etc)
-    // var renderableRows = self.processRowsProcessors(self.rows);
+    
     return $q.when(self.processRowsProcessors(self.rows))
       .then(function (renderableRows) {
         return self.setVisibleRows(renderableRows);
       });
-
-    // self.setVisibleRows(renderableRows);
   };
 
   /**
@@ -530,8 +532,8 @@ angular.module('ui.grid')
     this.scrolling = scrolling;
   };
 
-  Grid.prototype.rowSearcher = function rowSearcher(rows) {
-    var grid = this;
+  Grid.prototype.rowSearcher = function rowSearcher(renderableRows) {
+    return rowSearcher.search(this, renderableRows, this.columns);
   };
 
   Grid.prototype.sortByColumn = function sortByColumn(renderableRows) {

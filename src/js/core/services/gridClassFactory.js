@@ -26,7 +26,9 @@
 
           grid.registerColumnBuilder(service.defaultColumnBuilder);
 
-          grid.registerRowBuilder(grid.rowSearcher);
+          if (grid.options.enableFiltering) {
+            grid.registerRowsProcessor(grid.rowSearcher);
+          }
 
           // Register the default row processor, it sorts rows by selected columns
           if (!grid.options.externalSort && angular.isFunction) {

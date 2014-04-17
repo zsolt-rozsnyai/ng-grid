@@ -51,6 +51,15 @@
     },
     ASC: 'asc',
     DESC: 'desc',
+    filter: {
+      EXACT: 2,
+      CONTAINS: 4,
+      GT: 8,
+      GTOREQ: 16
+      LT: 32,
+      LTOREQ: 64,
+      NOTEQ: 128
+    },
 
     // TODO(c0bra): Create full list of these somehow. NOTE: do any allow a space before or after them?
     CURRENCY_SYMBOLS: ['ƒ', '$', '£', '$', '¤', '¥', '៛', '₩', '₱', '฿', '₫']
