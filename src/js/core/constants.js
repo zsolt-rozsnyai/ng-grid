@@ -54,11 +54,11 @@
     filter: {
       EXACT: 2,
       CONTAINS: 4,
-      GT: 8,
-      GTOREQ: 16
-      LT: 32,
-      LTOREQ: 64,
-      NOTEQ: 128
+      GREATER_THAN: 8,
+      GREATER_THAN_OR_EQUAL: 16,
+      LESS_THAN: 32,
+      LESS_THAN_OR_EQUAL: 64,
+      NOT_EQUAL: 128
     },
 
     // TODO(c0bra): Create full list of these somehow. NOTE: do any allow a space before or after them?

@@ -110,3 +110,39 @@
     .transform(translateY(0));
   }
 }
+
+.ui-grid-column-filter {
+  display: table;
+
+  .input-container {
+    position: relative;
+    display: table-cell;
+
+    .column-filter-input {
+      margin: 0;
+    }
+
+    .column-filter-cancel-icon-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+
+      .column-filter-cancel-icon {
+        position: absolute;
+        top: 50%;
+        line-height: 32px;
+        margin-top: -16px;
+        right: 2px;
+      }
+    }
+  }
+
+  .button-container {
+    display: table-cell;
+
+    .ui-grid-button {
+      margin-left: 4px;
+    }
+  }
+}

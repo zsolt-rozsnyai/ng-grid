@@ -27,7 +27,7 @@
           grid.registerColumnBuilder(service.defaultColumnBuilder);
 
           if (grid.options.enableFiltering) {
-            grid.registerRowsProcessor(grid.rowSearcher);
+            grid.registerRowsProcessor(grid.searchRows);
           }
 
           // Register the default row processor, it sorts rows by selected columns

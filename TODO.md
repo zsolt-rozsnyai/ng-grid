@@ -1,6 +1,19 @@
 # TODO
 
-# CURRENT
+# CURRENT (row filtering)
+
+1. Column filter needs to catch enter key on input
+
+1. [BUG] - i18n causes an exception if a given value is not present.
+  1. I think we need a function that will look for a translation in the current or given language and then return the value for the default language if not present
+  1. It could also take a flag and return null if not present
+  1. Need to add a test for this...
+
+1. [IDEA] - The "cancel" button for column filter could hover over the input box? Like an X on the right of the input?
+1. [TODO] - Does rowSearcher need to allow for custom equality comparators in colDef?
+1. [IDEA] - Should RegExps be allowed as search terms? We could test for whether the filter value starts and ends with '/'
+
+1. [TODO] - Document the autoHide feature for uiGridMenu. Probably need to rename it to hideOnResize
 
 1. [TODO] - Does rowsProcessors make sense for external sorting??? It would be downstream from the rows being added/modified, and would ITSELF be modifying the rows...
   1. Would probably be an infinite loop. External sorting needs to be able to hook in further upstream.

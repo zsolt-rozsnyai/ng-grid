@@ -532,7 +532,7 @@ angular.module('ui.grid')
     this.scrolling = scrolling;
   };
 
-  Grid.prototype.rowSearcher = function rowSearcher(renderableRows) {
+  Grid.prototype.searchRows = function searchRows(renderableRows) {
     return rowSearcher.search(this, renderableRows, this.columns);
   };
 

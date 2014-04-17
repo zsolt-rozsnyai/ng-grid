@@ -54,8 +54,7 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
       var defaultMenuItems = [
         // Column filter input
         {
-          title: i18nService.get().filter.search,
-          templateUrl: 'ui-grid/uiGridColumnFilter.html'
+          templateUrl: 'ui-grid/uiGridColumnFilter',
           action: function($event) {
             $event.stopPropagation();
             $scope.filterColumn($event);
