@@ -245,12 +245,13 @@ describe('rowSorter', function() {
       cols = grid.columns = [column];
     }));
 
-    it('should run', function() {
+    iit('should run', function() {
       grid.sortColumn(column);
 
       runs(function() {
         grid.processRowsProcessors(grid.rows)
           .then(function (newRows) {
+            dump('newRows', newRows);
             returnedRows = newRows;
           });
 

@@ -52,22 +52,23 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
       }
       
       var defaultMenuItems = [
+        // NOTE: disabling this in favor of a little filter text box
         // Column filter input
-        {
-          templateUrl: 'ui-grid/uiGridColumnFilter',
-          action: function($event) {
-            $event.stopPropagation();
-            $scope.filterColumn($event);
-          },
-          cancel: function ($event) {
-            $event.stopPropagation();
+        // {
+        //   templateUrl: 'ui-grid/uiGridColumnFilter',
+        //   action: function($event) {
+        //     $event.stopPropagation();
+        //     $scope.filterColumn($event);
+        //   },
+        //   cancel: function ($event) {
+        //     $event.stopPropagation();
 
-            $scope.col.filter = {};
-          },
-          shown: function () {
-            return filterable();
-          }
-        },
+        //     $scope.col.filter = {};
+        //   },
+        //   shown: function () {
+        //     return filterable();
+        //   }
+        // },
         {
           title: i18nService.get().sort.ascending,
           icon: 'ui-grid-icon-sort-alt-up',
@@ -224,12 +225,12 @@ angular.module('ui.grid').directive('uiGridColumnMenu', ['$log', '$timeout', '$w
 
       $scope.$on('$destroy', $scope.$on(uiGridConstants.events.GRID_SCROLL, function(evt, args) {
         self.hideMenu();
-        if (! $scope.$$phase) { $scope.$apply(); }
+        // if (! $scope.$$phase) { $scope.$apply(); }
       }));
 
       $scope.$on('$destroy', $scope.$on(uiGridConstants.events.ITEM_DRAGGING, function(evt, args) {
         self.hideMenu();
-        if (! $scope.$$phase) { $scope.$apply(); }
+        // if (! $scope.$$phase) { $scope.$apply(); }
       }));
 
       $scope.$on('$destroy', function() {

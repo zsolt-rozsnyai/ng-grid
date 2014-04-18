@@ -2,8 +2,10 @@
 
 # CURRENT (row filtering)
 
-1. [HMM] - Does rowsProcessor need to reset .visible on all the rows BEFORE the rowsProcessors get ran?
-1. Column filter needs to catch enter key on input
+1. [BUG] - row-sorting spec broken (I put an iit on it). The rows processors in the test aren't all getting called, but sorting and filtering are both working on the grid demos...
+1. [TODO] - Re-factor term caching so it's reusable
+1. [TODO] - Need to make filter condition that matches:  foofiebar =~ foo*bar
+1. [TODO] - Make a grid body div that ng-shows when there's no visible rows
 
 1. [BUG] - i18n causes an exception if a given value is not present.
   1. I think we need a function that will look for a translation in the current or given language and then return the value for the default language if not present
