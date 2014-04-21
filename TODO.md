@@ -2,16 +2,11 @@
 
 # CURRENT (row filtering)
 
-1. [TODO] - *s should match no or more characters
-1. [TODO] - Searching kind of slow...
-1. [TODO] - Make a grid body div that ng-shows when there's no visible rows
-
 1. [BUG] - i18n causes an exception if a given value is not present.
   1. I think we need a function that will look for a translation in the current or given language and then return the value for the default language if not present
   1. It could also take a flag and return null if not present
   1. Need to add a test for this...
 
-1. [IDEA] - The "cancel" button for column filter could hover over the input box? Like an X on the right of the input?
 1. [TODO] - Does rowSearcher need to allow for custom equality comparators in colDef?
 1. [IDEA] - Should RegExps be allowed as search terms? We could test for whether the filter value starts and ends with '/'
 
@@ -46,7 +41,6 @@
 1. [NOTE] - Use "-webkit-text-stroke: 0.3px" on icon font to fix jaggies in Chrome on Windows
 1. [TODO] - Add a failing test for the IE9-11 column sorting hack (columnSorter.js, line 229)
 
-1. [TODO] - Add row filtering
 1. [TODO] - Add notes about browser version support and Angular version support to README.md
 1. [TODO] - Add handling for sorting null values with columnDef sortingAlgorithm (PR #940)
 1. [TODO] - Currently uiGridColumnMenu uses i18n to create the menu item text on link. If the language is changed, they won't update because they're not bound...
@@ -60,7 +54,7 @@
 
 # Extras
 
-1. Add iit and ddescribe checks as commit hooks
+<!-- 1. Add iit and ddescribe checks as commit hooks -->
 
 # Native scrolling
 

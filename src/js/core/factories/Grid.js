@@ -348,7 +348,7 @@ angular.module('ui.grid')
       // Call the processor, passing in the rows to process and the current columns
       //   (note: it's wrapped in $q.when() in case the processor does not return a promise)
       return $q.when( processor.call(self, renderedRowsToProcess, self.columns) )
-        .then(function(processedRows) {
+        .then(function handleProcessedRows(processedRows) {
           // Check for errors
           if (! processedRows) {
             throw "Processor at index " + i + " did not return a set of renderable rows";

@@ -6,7 +6,7 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-function TermCache() {
+function QuickCache() {
   var c = function(get, set) {
     // Return the cached value of 'get' if it's stored
     if (get && c.cache[get]) {
@@ -161,6 +161,92 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
     }
   };
 
+  rowSearcher.runColumnFilter = function runColumnFilter(grid, row, column, termCache, i, filter) {
+    // Default to CONTAINS condition
+    if (typeof(filter.condition) === 'undefined' || !filter.condition) {
+      filter.condition = uiGridConstants.filter.CONTAINS;
+    }
+
+    // Term to search for.
+    var term = rowSearcher.stripTerm(filter);
+
+    if (term === null || term === undefined || term === '') {
+      return true;
+    }
+
+    // Get the column value for this row
+    var value = grid.getCellValue(row, column);
+
+    var regexpFlags = '';
+    if (!filter.flags || !filter.flags.caseSensitive) {
+      regexpFlags += 'i';
+    }
+
+    var cacheId = column.field + i;
+
+    // If the filter's condition is a RegExp, then use it
+    if (filter.condition instanceof RegExp) {
+      if (! filter.condition.test(value)) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.STARTS_WITH) {
+      var startswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp('^' + term, regexpFlags));
+
+      if (! startswithRE.test(value)) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.ENDS_WITH) {
+      var endswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term + '$', regexpFlags));
+
+      if (! endswithRE.test(value)) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.CONTAINS) {
+      var containsRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term, regexpFlags));
+
+      if (! containsRE.test(value)) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.EXACT) {
+      var exactRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId,  new RegExp('^' + term + '$', regexpFlags));
+
+      if (! exactRE.test(value)) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.GREATER_THAN) {
+      if (value <= term) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.GREATER_THAN_OR_EQUAL) {
+      if (value < term) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.LESS_THAN) {
+      if (value >= term) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.LESS_THAN_OR_EQUAL) {
+      if (value > term) {
+        return false;
+      }
+    }
+    else if (filter.condition === uiGridConstants.filter.NOT_EQUAL) {
+      if (! angular.equals(value, term)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   /**
    * @ngdoc function
    * @name searchColumn
@@ -178,7 +264,9 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
       filters = column.filters;
     }
     else if (typeof(column.filter) !== 'undefined' && column.filter) {
-      var condition = rowSearcher.guessCondition(column.filter);
+      // Cache custom conditions, building the RegExp takes time
+      var conditionCacheId = 'cond-' + column.field + '-' + column.filter.term;
+      var condition = termCache(conditionCacheId) ? termCache(conditionCacheId) : termCache(conditionCacheId, rowSearcher.guessCondition(column.filter));
 
       filters[0] = {
         term: column.filter.term,
@@ -202,86 +290,9 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
         }
       */
 
-      // Default to CONTAINS condition
-      if (typeof(filter.condition) === 'undefined' || !filter.condition) {
-        filter.condition = uiGridConstants.filter.CONTAINS;
-      }
-
-      // Term to search for.
-      var term = rowSearcher.stripTerm(filter);
-
-      if (term === null || term === undefined || term === '') {
-        continue;
-      }
-
-      // Get the column value for this row
-      var value = grid.getCellValue(row, column);
-
-      var regexpFlags = '';
-      if (!filter.flags || !filter.flags.caseSensitive) {
-        regexpFlags += 'i';
-      }
-
-      var cacheId = column.field + i;
-
-      // If the filter's condition is a RegExp, then use it
-      if (filter.condition instanceof RegExp) {
-        if (! filter.condition.test(value)) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.STARTS_WITH) {
-        var startswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp('^' + term, regexpFlags));
-
-        if (! startswithRE.test(value)) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.ENDS_WITH) {
-        var endswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term + '$', regexpFlags));
-
-        if (! endswithRE.test(value)) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.CONTAINS) {
-        var containsRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term, regexpFlags));
-
-        if (! containsRE.test(value)) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.EXACT) {
-        var exactRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId,  new RegExp('^' + term + '$', regexpFlags));
-
-        if (! exactRE.test(value)) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.GREATER_THAN) {
-        if (value <= term) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.GREATER_THAN_OR_EQUAL) {
-        if (value < term) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.LESS_THAN) {
-        if (value >= term) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.LESS_THAN_OR_EQUAL) {
-        if (value > term) {
-          return false;
-        }
-      }
-      else if (filter.condition === uiGridConstants.filter.NOT_EQUAL) {
-        if (! angular.equals(value, term)) {
-          return false;
-        }
+      var ret = rowSearcher.runColumnFilter(grid, row, column, termCache, i, filter);
+      if (! ret) {
+        return false;
       }
     }
 
@@ -303,14 +314,13 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
    * @param {Array[GridColumn]} columns GridColumns with filters to process
    */
   rowSearcher.search = function search(grid, rows, columns) {
-    $log.debug('search!');
-    // Don't do anything if we weren't passed any terms
+    // Don't do anything if we weren't passed any rows
     if (!rows) {
       return;
     }
 
     // Create a term cache
-    var termCache = new TermCache();
+    var termCache = new QuickCache();
 
     // Build filtered column list
     var filterCols = [];
@@ -322,30 +332,38 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
         filterCols.push(col);
       }
     });
-
+    
     if (filterCols.length > 0) {
-      rows.forEach(function (row) {
-        var matchesAllColumns = true;
-
-        for (var i in filterCols) {
-          var col = filterCols[i];
-
+      filterCols.forEach(function foreachFilterCol(col) {
+        rows.forEach(function foreachRow(row) {
           if (! rowSearcher.searchColumn(grid, row, col, termCache)) {
-            matchesAllColumns = false;
-
-            // Stop processing other terms
-            break;
+            row.visible = false;
           }
-        }
-
-        // Row doesn't match all the terms, don't display it
-        if (!matchesAllColumns) {
-          row.visible = false;
-        }
-        else {
-          row.visible = true;
-        }
+        });
       });
+
+      // rows.forEach(function (row) {
+      //   var matchesAllColumns = true;
+
+      //   for (var i in filterCols) {
+      //     var col = filterCols[i];
+
+      //     if (! rowSearcher.searchColumn(grid, row, col, termCache)) {
+      //       matchesAllColumns = false;
+
+      //       // Stop processing other terms
+      //       break;
+      //     }
+      //   }
+
+      //   // Row doesn't match all the terms, don't display it
+      //   if (!matchesAllColumns) {
+      //     row.visible = false;
+      //   }
+      //   else {
+      //     row.visible = true;
+      //   }
+      // });
     }
 
     // Reset the term cache
