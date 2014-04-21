@@ -2,9 +2,8 @@
 
 # CURRENT (row filtering)
 
-1. [BUG] - row-sorting spec broken (I put an iit on it). The rows processors in the test aren't all getting called, but sorting and filtering are both working on the grid demos...
-1. [TODO] - Re-factor term caching so it's reusable
-1. [TODO] - Need to make filter condition that matches:  foofiebar =~ foo*bar
+1. [TODO] - *s should match no or more characters
+1. [TODO] - Searching kind of slow...
 1. [TODO] - Make a grid body div that ng-shows when there's no visible rows
 
 1. [BUG] - i18n causes an exception if a given value is not present.
@@ -54,6 +53,7 @@
 
 # Cleanup
 
+1. [TODO] - Remove commented-out dumps from gridUtil
 1. [TODO] - Rename gridUtil to uiGridUtil
 1. [TODO] - Rename GridUtil in uiGridBody to gridUtil or the above
 1. [TODO] - Move uiGridCell to its own file

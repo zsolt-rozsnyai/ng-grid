@@ -363,12 +363,10 @@ angular.module('ui.grid')
 
           // If we're not done with the processors, call the next one
           if (i <= self.rowsProcessors.length - 1) {
-            dump('calling next!');
             return startProcessor(i, processedRows);
           }
           // We're done! Resolve the 'finished' promise
           else {
-            dump('done!');
             finished.resolve(processedRows);
           }
         });

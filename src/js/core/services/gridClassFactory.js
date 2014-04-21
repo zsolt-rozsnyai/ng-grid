@@ -40,11 +40,11 @@
           }
 
           // Register the default row processor, it sorts rows by selected columns
-          if (!grid.options.externalSort && angular.isFunction(grid.options.externalSort)) {
-            grid.registerRowsProcessor(grid.sortByColumn);
+          if (grid.options.externalSort && angular.isFunction(grid.options.externalSort)) {
+            grid.registerRowsProcessor(grid.options.externalSort);
           }
           else {
-            grid.registerRowsProcessor(grid.options.externalSort);
+            grid.registerRowsProcessor(grid.sortByColumn);
           }
 
           return grid;

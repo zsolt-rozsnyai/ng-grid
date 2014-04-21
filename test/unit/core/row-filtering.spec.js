@@ -68,22 +68,36 @@ describe('rowSearcher', function() {
   });
 
   describe('guessCondition', function () {
-    it('should guess STARTS_WITH when term ends with a *', function() {
+    it('should create a RegExp when term ends with a *', function() {
       var filter = { term: 'blah*' };
 
-      expect(rowSearcher.guessCondition(filter)).toEqual(uiGridConstants.filter.STARTS_WITH, 'STARTS_WITH');
+      var re = new RegExp(/^blah[\s\S]*?$/i);
+
+      expect(rowSearcher.guessCondition(filter)).toEqual(re);
     });
 
-    it('should guess ENDS_WITH when term starts with a *', function() {
+    it('should create a RegExp when term starts with a *', function() {
       var filter = { term: '*blah' };
 
-      expect(rowSearcher.guessCondition(filter)).toEqual(uiGridConstants.filter.ENDS_WITH, 'ENDS_WITH');
+      var re = new RegExp(/^[\s\S]*?blah$/i);
+
+      expect(rowSearcher.guessCondition(filter)).toEqual(re);
     });
 
-    it('should guess CONTAINS when term starts and ends with a *', function() {
+    it('should create a RegExp when term starts and ends with a *', function() {
       var filter = { term: '*blah*' };
 
-      expect(rowSearcher.guessCondition(filter)).toEqual(uiGridConstants.filter.CONTAINS, 'CONTAINS');
+      var re = new RegExp(/^[\s\S]*?blah[\s\S]*?$/i);
+
+      expect(rowSearcher.guessCondition(filter)).toEqual(re);
+    });
+
+    it('should create a RegExp when term has a * in the middle', function() {
+      var filter = { term: 'bl*h' };
+
+      var re = new RegExp(/^bl[\s\S]*?h$/i);
+
+      expect(rowSearcher.guessCondition(filter)).toEqual(re);
     });
 
     it('should guess STARTS_WITH when term has no *s', function() {
@@ -91,6 +105,8 @@ describe('rowSearcher', function() {
 
       expect(rowSearcher.guessCondition(filter)).toEqual(uiGridConstants.filter.STARTS_WITH, 'STARTS_WITH');
     });
+
+
   });
 
   describe('getTerm', function() {
@@ -185,6 +201,28 @@ describe('rowSearcher', function() {
   describe('with a preceding *', function () {
     it('needs to match', function () {
       setTermFilter(columns[0], '*ll');
+
+      var ret = rowSearcher.search(grid, rows, columns);
+
+      expect(ret[0].visible).toBe(true);
+      expect(ret[1].visible).toBe(false);
+    });
+  });
+
+  describe('with a * inside the term', function () {
+    it('needs to match', function () {
+      setTermFilter(columns[0], 'B*ll');
+
+      var ret = rowSearcher.search(grid, rows, columns);
+
+      expect(ret[0].visible).toBe(true);
+      expect(ret[1].visible).toBe(false);
+    });
+  });
+
+  describe('a *', function () {
+    it('should match zero characters too', function () {
+      setTermFilter(columns[0], 'Bi*ll');
 
       var ret = rowSearcher.search(grid, rows, columns);
 

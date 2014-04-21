@@ -6,6 +6,31 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+function TermCache() {
+  var c = function(get, set) {
+    // Return the cached value of 'get' if it's stored
+    if (get && c.cache[get]) {
+      return c.cache[get];
+    }
+    // Otherwise set it and return it
+    else if (get && set) {
+      c.cache[get] = set;
+      return c.cache[get];
+    }
+    else {
+      return undefined;
+    }
+  };
+
+  c.cache = {};
+
+  c.clear = function () {
+    c.cache = {};
+  };
+
+  return c;
+}
+
 /**
  *  @ngdoc service
  *  @name ui.grid.service:rowSearcher
@@ -104,18 +129,33 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
     var term = rowSearcher.getTerm(filter);
     
     // Term starts with and ends with a *, use 'contains' condition
-    if (/^\*[\s\S]+?\*$/.test(term)) {
-      return uiGridConstants.filter.CONTAINS;
+    // if (/^\*[\s\S]+?\*$/.test(term)) {
+    //   return uiGridConstants.filter.CONTAINS;
+    // }
+    // // Term starts with a *, use 'ends with' condition
+    // else if (/^\*/.test(term)) {
+    //   return uiGridConstants.filter.ENDS_WITH;
+    // }
+    // // Term ends with a *, use 'starts with' condition
+    // else if (/\*$/.test(term)) {
+    //   return uiGridConstants.filter.STARTS_WITH;
+    // }
+    // // Default to default condition
+    // else {
+    //   return defaultCondition;
+    // }
+
+    // If the term has *s then turn it into a regex
+    if (/\*/.test(term)) {
+      var regexpFlags = '';
+      if (!filter.flags || !filter.flags.caseSensitive) {
+        regexpFlags += 'i';
+      }
+
+      var reText = term.replace(/(\\)?\*/g, function ($0, $1) { return $1 ? $0 : '[\\s\\S]*?'; });
+      return new RegExp('^' + reText + '$', regexpFlags);
     }
-    // Term starts with a *, use 'ends with' condition
-    else if (/^\*/.test(term)) {
-      return uiGridConstants.filter.ENDS_WITH;
-    }
-    // Term ends with a *, use 'starts with' condition
-    else if (/\*$/.test(term)) {
-      return uiGridConstants.filter.STARTS_WITH;
-    }
-    // Default to default condition
+    // Otherwise default to default condition
     else {
       return defaultCondition;
     }
@@ -182,73 +222,37 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
         regexpFlags += 'i';
       }
 
-      if (filter.condition === uiGridConstants.filter.STARTS_WITH) {
-        var startswithRE;
-        if (termCache[column.field] && termCache[column.field][i]) {
-          startswithRE = termCache[column.field][i];
-        }
-        else {
-          startswithRE = new RegExp('^' + term, regexpFlags);
+      var cacheId = column.field + i;
 
-          if (!termCache[column.field]) {
-            termCache[column.field] = [];
-          }
-          termCache[column.field][i] = startswithRE;
+      // If the filter's condition is a RegExp, then use it
+      if (filter.condition instanceof RegExp) {
+        if (! filter.condition.test(value)) {
+          return false;
         }
+      }
+      else if (filter.condition === uiGridConstants.filter.STARTS_WITH) {
+        var startswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp('^' + term, regexpFlags));
 
         if (! startswithRE.test(value)) {
           return false;
         }
       }
       else if (filter.condition === uiGridConstants.filter.ENDS_WITH) {
-        var endswithRE;
-        if (termCache[column.field] && termCache[column.field][i]) {
-          endswithRE = termCache[column.field][i];
-        }
-        else {
-          endswithRE = new RegExp(term + '$', regexpFlags);
-
-          if (!termCache[column.field]) {
-            termCache[column.field] = [];
-          }
-          termCache[column.field][i] = endswithRE;
-        }
+        var endswithRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term + '$', regexpFlags));
 
         if (! endswithRE.test(value)) {
           return false;
         }
       }
       else if (filter.condition === uiGridConstants.filter.CONTAINS) {
-        var containsRE;
-        if (termCache[column.field] && termCache[column.field][i]) {
-          containsRE = termCache[column.field][i];
-        }
-        else {
-          containsRE = new RegExp(term, regexpFlags);
-
-          if (!termCache[column.field]) {
-            termCache[column.field] = [];
-          }
-          termCache[column.field][i] = containsRE;
-        }
+        var containsRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId, new RegExp(term, regexpFlags));
 
         if (! containsRE.test(value)) {
           return false;
         }
       }
       else if (filter.condition === uiGridConstants.filter.EXACT) {
-        var exactRE;
-        if (termCache[column.field] && termCache[column.field][i]) {
-          exactRE = termCache[column.field][i];
-        }
-        else {
-          exactRE = new RegExp('^' + term + '$', regexpFlags);
-
-          if (!termCache[column.field]) {
-            termCache[column.field] = [];
-          }
-          termCache[column.field][i] = exactRE;
-        }
+        var exactRE = termCache(cacheId) ? termCache(cacheId) : termCache(cacheId,  new RegExp('^' + term + '$', regexpFlags));
 
         if (! exactRE.test(value)) {
           return false;
@@ -306,7 +310,7 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
     }
 
     // Create a term cache
-    var termCache = [];
+    var termCache = new TermCache();
 
     // Build filtered column list
     var filterCols = [];
@@ -345,7 +349,7 @@ module.service('rowSearcher', ['$log', 'uiGridConstants', function ($log, uiGrid
     }
 
     // Reset the term cache
-    termCache = [];
+    termCache.clear();
 
     return rows;
   };
