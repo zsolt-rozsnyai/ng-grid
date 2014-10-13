@@ -551,8 +551,8 @@
           $scope.$on(uiGridConstants.events.GRID_SCROLL, function (event, args) {
             var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
             if (lastRowCol && lastRowCol.row === $scope.row && lastRowCol.col === $scope.col && $elm[0] !== $document.activeElement) {
-              // $log.debug('Setting focused to', lastRowCol);
-              // setFocused();
+              $log.debug('Setting focused to', lastRowCol);
+              setFocused();
             }
           });
 
