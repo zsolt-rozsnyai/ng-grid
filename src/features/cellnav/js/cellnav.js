@@ -439,8 +439,8 @@
    </file>
    </example>
    */
-  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants',
-    function ($log, uiGridCellNavService, uiGridCellNavConstants) {
+  module.directive('uiGridCellnav', ['$log', 'uiGridCellNavService', 'uiGridCellNavConstants', 'uiGridConstants',
+    function ($log, uiGridCellNavService, uiGridCellNavConstants, uiGridConstants) {
       return {
         replace: true,
         priority: -150,
@@ -468,7 +468,6 @@
                   grid.cellNav.lastRowCol = newRowCol;
                 }
               };
-
             },
             post: function ($scope, $elm, $attrs, uiGridCtrl) {
             }
@@ -505,8 +504,8 @@
    *  @restrict A
    *  @description Stacks on top of ui.grid.uiGridCell to provide cell navigation
    */
-  module.directive('uiGridCell', ['uiGridCellNavService', '$log', 'uiGridCellNavConstants',
-    function (uiGridCellNavService, $log, uiGridCellNavConstants) {
+  module.directive('uiGridCell', ['uiGridCellNavService', '$log', 'uiGridCellNavConstants', 'uiGridConstants', '$document',
+    function (uiGridCellNavService, $log, uiGridCellNavConstants, uiGridConstants, $document) {
       return {
         priority: -150, // run after default uiGridCell directive and ui.grid.edit uiGridCell
         restrict: 'A',
@@ -548,13 +547,21 @@
             }
           });
 
+          // When the grid scrolls, if the current active element on the document isn't the element we expect, (which will happen if the DOM elements have been rerendered), then re-focus the element
+          $scope.$on(uiGridConstants.events.GRID_SCROLL, function (event, args) {
+            var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+            if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col && $elm[0] !== $document.activeElement) {
+              // setFocused();
+            }
+          });
+
           function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
           }
 
           function setFocused() {
             var div = $elm.find('div');
-            console.log('setFocused: ' + div[0].parentElement.className);
+            console.log('setFocused: ' + $scope.rowRenderIndex, $scope.colContainer.cellNav.lastRowCol);
             div[0].focus();
             div.attr("tabindex", 0);
             $scope.grid.queueRefresh();
