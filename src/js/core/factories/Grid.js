@@ -764,30 +764,6 @@ angular.module('ui.grid')
     this.styleComputations.push(styleComputationInfo);
   };
 
-
-  // NOTE (c0bra): We already have rowBuilders. I think these do exactly the same thing...
-  // Grid.prototype.registerRowFilter = function(filter) {
-  //   // TODO(c0bra): validate filter?
-
-  //   this.rowFilters.push(filter);
-  // };
-
-  // Grid.prototype.removeRowFilter = function(filter) {
-  //   var idx = this.rowFilters.indexOf(filter);
-
-  //   if (typeof(idx) !== 'undefined' && idx !== undefined) {
-  //     this.rowFilters.slice(idx, 1);
-  //   }
-  // };
-  
-  // Grid.prototype.processRowFilters = function(rows) {
-  //   var self = this;
-  //   self.rowFilters.forEach(function (filter) {
-  //     filter.call(self, rows);
-  //   });
-  // };
-
-
   /**
    * @ngdoc function
    * @name registerRowsProcessor
@@ -819,7 +795,7 @@ angular.module('ui.grid')
   Grid.prototype.removeRowsProcessor = function removeRowsProcessor(processor) {
     var idx = this.rowsProcessors.indexOf(processor);
 
-    if (typeof(idx) !== 'undefined' && idx !== undefined) {
+    if (idx !== -1) {
       this.rowsProcessors.splice(idx, 1);
     }
   };
@@ -963,7 +939,7 @@ angular.module('ui.grid')
   Grid.prototype.removeColumnsProcessor = function removeColumnsProcessor(processor) {
     var idx = this.columnsProcessors.indexOf(processor);
 
-    if (typeof(idx) !== 'undefined' && idx !== undefined) {
+    if (idx !== -1) {
       this.columnsProcessors.splice(idx, 1);
     }
   };
@@ -1221,7 +1197,7 @@ angular.module('ui.grid')
   Grid.prototype.removeViewportAdjuster = function registerViewportAdjuster(func) {
     var idx = this.viewportAdjusters.indexOf(func);
 
-    if (typeof(idx) !== 'undefined' && idx !== undefined) {
+    if (idx !== -1) {
       this.viewportAdjusters.splice(idx, 1);
     }
   };

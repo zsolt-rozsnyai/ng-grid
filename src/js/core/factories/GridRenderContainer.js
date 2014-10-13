@@ -114,7 +114,7 @@ angular.module('ui.grid')
   GridRenderContainer.prototype.removeViewportAdjuster = function registerViewportAdjuster(func) {
     var idx = this.viewportAdjusters.indexOf(func);
 
-    if (typeof(idx) !== 'undefined' && idx !== undefined) {
+    if (idx !== -1) {
       this.viewportAdjusters.splice(idx, 1);
     }
   };
@@ -273,6 +273,8 @@ angular.module('ui.grid')
   };
 
   GridRenderContainer.prototype.adjustRows = function adjustRows(scrollTop, scrollPercentage) {
+    $log.debug('adjustRows');
+    
     var self = this;
 
     var minRows = self.minRowsToRender();
