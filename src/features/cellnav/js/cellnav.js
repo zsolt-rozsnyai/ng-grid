@@ -550,7 +550,8 @@
           // When the grid scrolls, if the current active element on the document isn't the element we expect, (which will happen if the DOM elements have been rerendered), then re-focus the element
           $scope.$on(uiGridConstants.events.GRID_SCROLL, function (event, args) {
             var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
-            if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col && $elm[0] !== $document.activeElement) {
+            if (lastRowCol && lastRowCol.row === $scope.row && lastRowCol.col === $scope.col && $elm[0] !== $document.activeElement) {
+              // $log.debug('Setting focused to', lastRowCol);
               // setFocused();
             }
           });
