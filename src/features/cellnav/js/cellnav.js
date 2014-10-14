@@ -552,7 +552,10 @@
             var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
             if (lastRowCol && lastRowCol.row === $scope.row && lastRowCol.col === $scope.col && $elm[0] !== $document.activeElement) {
               $log.debug('Setting focused to', lastRowCol);
-              setFocused();
+              // setFocused();
+            }
+            else {
+              // setBlurred();
             }
           });
 
@@ -565,9 +568,14 @@
             console.log('setFocused: ' + $scope.rowRenderIndex, $scope.colContainer.cellNav.lastRowCol);
             div[0].focus();
             div.attr("tabindex", 0);
-            $scope.grid.queueRefresh();
+            $scope.grid.refresh();
           }
 
+          function setBlurred() {
+            var div = $elm.find('div');
+            div[0].blur();
+            div.attr("tabindex", null);
+          }
         }
       };
     }]);
