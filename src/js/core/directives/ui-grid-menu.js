@@ -30,8 +30,8 @@
  */
 angular.module('ui.grid')
 
-.directive('uiGridMenu', ['$compile', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants', 
-function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants) {
+.directive('uiGridMenu', ['$log', '$compile', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants',
+function ($log, $compile, $timeout, $window, $document, gridUtil, uiGridConstants) {
   var uiGridMenu = {
     priority: 0,
     scope: {
@@ -49,6 +49,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants) {
      
     // *** Show/Hide functions ******
       self.showMenu = $scope.showMenu = function(event, args) {
+        debugger;
         if ( !$scope.shown ){
 
           /*
@@ -68,26 +69,38 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants) {
           $timeout( function() {
             menuMid = $elm[0].querySelectorAll( '.ui-grid-menu-mid' );
             $animate = gridUtil.enableAnimations(menuMid);
-            if ( $animate ){
-              $scope.shownMid = true;
-              $animate.removeClass(menuMid, 'ng-hide', function() {
-                $scope.$emit('menu-shown');
+            if ($animate) {
+              // $scope.shownMid = true;
+              var asdf = $animate.removeClass(menuMid, 'ng-hide')
+              .then(
+                function () {
+                  $scope.$emit('menu-shown');
+                }
+              )
+              .catch(function () {
+                debugger;
+              })
+              .finally(function () {
+                debugger;
               });
-            } else {
+            }
+            else {
               $scope.shownMid = true;
               $scope.$emit('menu-shown');
             }
           });
-        } else if ( !$scope.shownMid ) {
+        }
+        else if (!$scope.shownMid) {
           // we're probably doing a hide then show, so we don't need to wait for ng-if
           menuMid = $elm[0].querySelectorAll( '.ui-grid-menu-mid' );
           $animate = gridUtil.enableAnimations(menuMid);
-          if ( $animate ){
+          if ($animate) {
             $scope.shownMid = true;
-            $animate.removeClass(menuMid, 'ng-hide', function() {
+            $animate.removeClass(menuMid, 'ng-hide').then(function () {
               $scope.$emit('menu-shown');
             });
-          } else {
+          }
+          else {
             $scope.shownMid = true;
             $scope.$emit('menu-shown');
           }
@@ -124,6 +137,11 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants) {
           if ( $animate ){
             $scope.shownMid = false;
             $animate.addClass(menuMid, 'ng-hide', function() {
+              if ( !$scope.shownMid ){
+                $scope.shown = false;
+                $scope.$emit('menu-hidden');
+              }
+            }).then(function() {
               if ( !$scope.shownMid ){
                 $scope.shown = false;
                 $scope.$emit('menu-hidden');

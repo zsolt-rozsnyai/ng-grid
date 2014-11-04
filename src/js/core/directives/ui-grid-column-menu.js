@@ -356,6 +356,8 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService) {
        * @param {element} $columnElement the column element we want to position below
        */
       $scope.showMenu = function(column, $columnElement, event) {
+        debugger;
+        
         // Swap to this column
         $scope.col = column;
 
