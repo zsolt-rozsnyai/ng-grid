@@ -462,8 +462,8 @@
    </file>
    </example>
    */
-  module.directive('uiGridCellnav', ['gridUtil', 'uiGridCellNavService', 'uiGridCellNavConstants',
-    function (gridUtil, uiGridCellNavService, uiGridCellNavConstants) {
+  module.directive('uiGridCellnav', ['$log', 'gridUtil', 'uiGridCellNavService', 'uiGridCellNavConstants',
+    function ($log, gridUtil, uiGridCellNavService, uiGridCellNavConstants) {
       return {
         replace: true,
         priority: -150,
@@ -500,21 +500,50 @@
       };
     }]);
 
-  module.directive('uiGridRenderContainer', ['gridUtil', 'uiGridCellNavService', 'uiGridCellNavConstants',
-    function (gridUtil, uiGridCellNavService, uiGridCellNavConstants) {
+  module.directive('uiGridRenderContainer', ['$log', 'gridUtil', 'uiGridCellNavService', 'uiGridCellNavConstants',
+    function ($log, gridUtil, uiGridCellNavService, uiGridCellNavConstants) {
       return {
         replace: true,
         priority: -99999, //this needs to run very last
-        require: '^uiGrid',
+        require: ['^uiGrid', 'uiGridRenderContainer'],
         scope: false,
         compile: function () {
           return {
             pre: function ($scope, $elm, $attrs, uiGridCtrl) {
             },
-            post: function ($scope, $elm, $attrs, uiGridCtrl) {
+            post: function ($scope, $elm, $attrs, controllers) {
+              var uiGridCtrl = controllers[0],
+                  renderContainerCtrl = controllers[1];
+
+              var containerId = renderContainerCtrl.containerId;
+
               var grid = uiGridCtrl.grid;
               //needs to run last after all renderContainers are built
               uiGridCellNavService.decorateRenderContainers(grid);
+
+              $elm.on('keydown', function (evt) {
+                var direction = uiGridCellNavService.getDirection(evt);
+                if (direction === null) {
+                  return true;
+                }
+
+                var a = grid;
+                var b = $scope;
+                var c = renderContainerCtrl;
+
+                var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+                var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
+                // $log.debug('next id', rowCol.row.entity.id);
+
+                uiGridCtrl.cellNav.broadcastCellNav(rowCol);
+                uiGridCellNavService.scrollToInternal(grid, $scope, rowCol.row, rowCol.col);
+                // setTabEnabled();
+
+                evt.stopPropagation();
+                evt.preventDefault();
+
+                return false;
+              });
             }
           };
         }
@@ -528,8 +557,8 @@
    *  @restrict A
    *  @description Stacks on top of ui.grid.uiGridCell to provide cell navigation
    */
-  module.directive('uiGridCell', ['uiGridCellNavService', 'gridUtil', 'uiGridCellNavConstants',
-    function (uiGridCellNavService, gridUtil, uiGridCellNavConstants) {
+  module.directive('uiGridCell', ['$log', '$timeout', 'uiGridCellNavService', 'gridUtil', 'uiGridCellNavConstants', 'uiGridConstants',
+    function ($log, $timeout, uiGridCellNavService, gridUtil, uiGridCellNavConstants, uiGridConstants) {
       return {
         priority: -150, // run after default uiGridCell directive and ui.grid.edit uiGridCell
         restrict: 'A',
@@ -542,25 +571,29 @@
 
           setTabEnabled();
 
-          $elm.on('keydown', function (evt) {
-            var direction = uiGridCellNavService.getDirection(evt);
-            if (direction === null) {
-              return true;
-            }
+          // $elm.on('keydown', function (evt) {
+          //   var direction = uiGridCellNavService.getDirection(evt);
+          //   if (direction === null) {
+          //     return true;
+          //   }
 
-            var rowCol = $scope.colContainer.cellNav.getNextRowCol(direction, $scope.row, $scope.col);
+          //   var rowCol = $scope.colContainer.cellNav.getNextRowCol(direction, $scope.row, $scope.col);
+          //   $log.debug('next id', rowCol.row.entity.id);
 
-            uiGridCtrl.cellNav.broadcastCellNav(rowCol);
-            setTabEnabled();
+          //   uiGridCtrl.cellNav.broadcastCellNav(rowCol);
+          //   setTabEnabled();
 
-            evt.stopPropagation();
-            evt.preventDefault();
+          //   evt.stopPropagation();
+          //   evt.preventDefault();
 
-            return false;
-          });
+          //   return false;
+          // });
 
-          $elm.find('div').on('focus', function (evt) {
-            uiGridCtrl.cellNav.broadcastFocus($scope.row, $scope.col);
+          $elm.find('div').on('click', function (evt) {
+            $log.debug('grid cell div click');
+            // setFocused();
+            // uiGridCtrl.cellNav.broadcastFocus($scope.row, $scope.col);
+            uiGridCtrl.cellNav.broadcastCellNav(new RowCol($scope.row, $scope.col));
           });
 
           //this event is fired for all cells.  If the cell matches, then focus is set
@@ -569,6 +602,26 @@
               rowCol.col === $scope.col) {
               setFocused();
             }
+            else {
+              clearFocus();
+            }
+
+            // $scope.grid.queueRefresh();
+          });
+
+          $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
+            clearFocus();
+                        
+            $timeout(function () {
+              var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+
+              if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
+                setFocused();
+              }
+              // else {
+              //   clearFocus();
+              // }
+            });
           });
 
           function setTabEnabled() {
@@ -578,11 +631,25 @@
           function setFocused() {
             var div = $elm.find('div');
             // gridUtil.logDebug('setFocused: ' + div[0].parentElement.className);
-            div[0].focus();
-            div.attr("tabindex", 0);
-            $scope.grid.queueRefresh();
+            // div[0].focus();
+            // div.attr("tabindex", 0);
+            div.addClass('ui-grid-cell-focus');
+            // $scope.grid.queueRefresh();
           }
 
+          function clearFocus() {
+            var div = $elm.find('div');
+            // gridUtil.logDebug('setFocused: ' + div[0].parentElement.className);
+            // div[0].focus();
+            // div.attr("tabindex", 0);
+            div.removeClass('ui-grid-cell-focus');
+            // $scope.grid.queueRefresh();
+          }
+
+          $scope.$on('$destroy', function () {
+            $log.debug('cell destroyed!');
+            $elm.find('div').off('click');
+          });
         }
       };
     }]);
