@@ -1,4 +1,4 @@
-describe('ui-grid-column-menu uiGridColumnMenuService', function () {
+ddescribe('ui-grid-column-menu uiGridColumnMenuService', function () {
   var uiGridColumnMenuService;
   var gridClassFactory;
   var grid; 
