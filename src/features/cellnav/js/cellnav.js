@@ -392,6 +392,74 @@
         /**
          * @ngdoc method
          * @methodOf ui.grid.cellNav.service:uiGridCellNavService
+         * @name scrollToIfNecessary
+         * @description Scrolls the grid to make a certain row and column combo visible,
+         *   in the case that it is not completely visible on the screen already.
+         * @param {Grid} grid the grid you'd like to act upon, usually available
+         * from gridApi.grid
+         * @param {object} $scope a scope we can broadcast events from
+         * @param {GridRow} gridRow row to make visible
+         * @param {GridCol} gridCol column to make visible
+         */
+        scrollToIfNecessary: function (grid, $scope, gridRow, gridCol) {
+          var args = {};
+
+          // Alias the visible row and column caches 
+          var visRowCache = grid.renderContainers.body.visibleRowCache;
+          var visColCache = grid.renderContainers.body.visibleColumnCache;
+
+          // Get the top, left, right, and bottom "scrolled" edges of the grid
+          var topBound = grid.renderContainers.body.prevScrollTop - grid.headerHeight;
+          topBound = (topBound < 0) ? 0 : topBound;
+
+          var leftBound = grid.renderContainers.body.prevScrollLeft;
+
+          var bottomBound = topBound + grid.gridHeight;
+
+          if (grid.horizontalScrollbarHeight) {
+            bottomBound = bottomBound - grid.horizontalScrollbarHeight;
+          }
+
+          var rightBound = leftBound + grid.gridWidth;
+          if (grid.verticalScrollbarWidth) {
+            rightBound = rightBound - grid.verticalScrollbarWidth;
+          }
+
+          if (gridRow !== null) {
+            var seekRowIndex = visRowCache.indexOf(gridRow);
+            var totalRows = visRowCache.length;
+            var percentage = ( seekRowIndex + ( seekRowIndex / ( totalRows - 1 ) ) ) / totalRows;
+            // args.y = { percentage:  percentage  };
+            var scrollLength = (grid.renderContainers.body.getCanvasHeight() - grid.renderContainers.body.getViewportHeight());
+
+            // Add the height of the native horizontal scrollbar, if it's there. Otherwise it will mask over the final row
+            if (grid.horizontalScrollbarHeight && grid.horizontalScrollbarHeight > 0) {
+              scrollLength = scrollLength + grid.horizontalScrollbarHeight;
+            }
+
+            var pixelsToSeeRow = (scrollLength * percentage) + grid.options.rowHeight;
+
+            if (pixelsToSeeRow < topBound || pixelsToSeeRow > bottomBound) {
+              args.y = { percentage: percentage  };
+            }
+          }
+
+          if (gridCol !== null) {
+            var pixelsToSeeColumn = this.getLeftWidth(grid, gridCol) + gridCol.drawnWidth;
+
+            if (pixelsToSeeColumn < leftBound || pixelsToSeeColumn > rightBound) {
+              args.x = { percentage: this.getLeftWidth(grid, gridCol) / this.getLeftWidth(grid, visColCache[visColCache.length - 1] ) };
+            }
+          }
+
+          if (args.y || args.x) {
+            $scope.$broadcast(uiGridConstants.events.GRID_SCROLL, args);
+          }
+        },
+
+        /**
+         * @ngdoc method
+         * @methodOf ui.grid.cellNav.service:uiGridCellNavService
          * @name getLeftWidth
          * @description Get the current drawn width of the columns in the
          * grid up to the numbered column, and add an apportionment for the
@@ -536,7 +604,7 @@
                 // $log.debug('next id', rowCol.row.entity.id);
 
                 uiGridCtrl.cellNav.broadcastCellNav(rowCol);
-                uiGridCellNavService.scrollToInternal(grid, $scope, rowCol.row, rowCol.col);
+                uiGridCellNavService.scrollToIfNecessary(grid, $scope, rowCol.row, rowCol.col);
                 // setTabEnabled();
 
                 evt.stopPropagation();
