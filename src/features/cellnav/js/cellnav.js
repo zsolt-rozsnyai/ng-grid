@@ -594,6 +594,8 @@
             // setFocused();
             // uiGridCtrl.cellNav.broadcastFocus($scope.row, $scope.col);
             uiGridCtrl.cellNav.broadcastCellNav(new RowCol($scope.row, $scope.col));
+
+            evt.stopPropagation();
           });
 
           //this event is fired for all cells.  If the cell matches, then focus is set
@@ -609,20 +611,20 @@
             // $scope.grid.queueRefresh();
           });
 
-          $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
-            clearFocus();
-                        
-            $timeout(function () {
-              var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+          // $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
+          //   clearFocus();
 
-              if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
-                setFocused();
-              }
-              // else {
-              //   clearFocus();
-              // }
-            });
-          });
+          //   $timeout(function () {
+          //     var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+
+          //     if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
+          //       setFocused();
+          //     }
+          //     // else {
+          //     //   clearFocus();
+          //     // }
+          //   });
+          // });
 
           function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
@@ -647,7 +649,6 @@
           }
 
           $scope.$on('$destroy', function () {
-            $log.debug('cell destroyed!');
             $elm.find('div').off('click');
           });
         }
