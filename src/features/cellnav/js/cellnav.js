@@ -213,6 +213,7 @@
                 scrollTo: function (grid, $scope, rowEntity, colDef) {
                   service.scrollTo(grid, $scope, rowEntity, colDef);
                 },
+
                 /**
                  * @ngdoc function
                  * @name getFocusedCell
@@ -578,8 +579,8 @@
       };
     }]);
 
-  module.directive('uiGridRenderContainer', ['$log', 'gridUtil', 'uiGridCellNavService', 'uiGridCellNavConstants',
-    function ($log, gridUtil, uiGridCellNavService, uiGridCellNavConstants) {
+  module.directive('uiGridRenderContainer', ['$log', '$timeout', 'gridUtil', 'uiGridConstants', 'uiGridCellNavService', 'uiGridCellNavConstants',
+    function ($log, $timeout, gridUtil, uiGridConstants, uiGridCellNavService, uiGridCellNavConstants) {
       return {
         replace: true,
         priority: -99999, //this needs to run very last
@@ -605,10 +606,6 @@
                   return true;
                 }
 
-                var a = grid;
-                var b = $scope;
-                var c = renderContainerCtrl;
-
                 var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
                 var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
                 // $log.debug('next id', rowCol.row.entity.id);
@@ -621,6 +618,17 @@
                 evt.preventDefault();
 
                 return false;
+              });
+
+              // When there's a scroll event we need to make sure to re-focus the right row, because the cell contents may have changed
+              $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
+                // We have to wrap in TWO timeouts so that we run AFTER the scroll event is resolved.
+                $timeout(function () {
+                  $timeout(function () {
+                    var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+                    uiGridCtrl.cellNav.broadcastCellNav(lastRowCol);
+                  });
+                });
               });
             }
           };
@@ -668,9 +676,6 @@
           // });
 
           $elm.find('div').on('click', function (evt) {
-            $log.debug('grid cell div click');
-            // setFocused();
-            // uiGridCtrl.cellNav.broadcastFocus($scope.row, $scope.col);
             uiGridCtrl.cellNav.broadcastCellNav(new RowCol($scope.row, $scope.col));
 
             evt.stopPropagation();
@@ -689,20 +694,25 @@
             // $scope.grid.queueRefresh();
           });
 
-          $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
-            clearFocus();
+          // $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
+          //   clearFocus();
 
-            $timeout(function () {
-              var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+          //   $log.debug('scrollIndex 1', uiGridCtrl.grid.renderContainers.body.prevRowScrollIndex);
 
-              if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
-                setFocused();
-              }
-              // else {
-              //   clearFocus();
-              // }
-            });
-          });
+          //   $timeout(function () {
+          //     $log.debug('scrollIndex 2', uiGridCtrl.grid.renderContainers.body.prevRowScrollIndex);
+
+          //     var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+
+          //     if (lastRowCol === null) {
+          //       return;
+          //     }
+
+          //     if (lastRowCol.hasOwnProperty('row') && lastRowCol.row === $scope.row && lastRowCol.hasOwnProperty('col') && lastRowCol.col === $scope.col) {
+          //       setFocused();
+          //     }
+          //   });
+          // });
 
           function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
