@@ -409,12 +409,12 @@
           var visColCache = grid.renderContainers.body.visibleColumnCache;
 
           // Get the top, left, right, and bottom "scrolled" edges of the grid
-          var topBound = grid.renderContainers.body.prevScrollTop - grid.headerHeight;
+          var topBound = grid.renderContainers.body.prevScrollTop + grid.headerHeight;
           topBound = (topBound < 0) ? 0 : topBound;
 
           var leftBound = grid.renderContainers.body.prevScrollLeft;
 
-          var bottomBound = topBound + grid.gridHeight;
+          var bottomBound = grid.renderContainers.body.prevScrollTop + grid.gridHeight - grid.headerHeight;
 
           if (grid.horizontalScrollbarHeight) {
             bottomBound = bottomBound - grid.horizontalScrollbarHeight;
@@ -428,7 +428,7 @@
           if (gridRow !== null) {
             var seekRowIndex = visRowCache.indexOf(gridRow);
             var totalRows = visRowCache.length;
-            var percentage = ( seekRowIndex + ( seekRowIndex / ( totalRows - 1 ) ) ) / totalRows;
+            // var percentage = ( seekRowIndex + ( seekRowIndex / ( totalRows - 1 ) ) ) / totalRows;
             // args.y = { percentage:  percentage  };
             var scrollLength = (grid.renderContainers.body.getCanvasHeight() - grid.renderContainers.body.getViewportHeight());
 
@@ -437,9 +437,19 @@
               scrollLength = scrollLength + grid.horizontalScrollbarHeight;
             }
 
-            var pixelsToSeeRow = (scrollLength * percentage) + grid.options.rowHeight;
+            // var pixelsToSeeRow = (scrollLength * percentage) + grid.options.rowHeight;
+            var pixelsToSeeRow = ((seekRowIndex + 1) * grid.options.rowHeight);
+            pixelsToSeeRow = (pixelsToSeeRow < 0) ? 0 : pixelsToSeeRow;
 
-            if (pixelsToSeeRow < topBound || pixelsToSeeRow > bottomBound) {
+            var scrollPixels, percentage;
+            if (pixelsToSeeRow < topBound) {
+              scrollPixels = grid.renderContainers.body.prevScrollTop - (topBound - pixelsToSeeRow);
+              percentage = scrollPixels / scrollLength;
+              args.y = { percentage: percentage  };
+            }
+            else if (pixelsToSeeRow > bottomBound) {
+              scrollPixels = pixelsToSeeRow - bottomBound + grid.renderContainers.body.prevScrollTop;
+              percentage = scrollPixels / scrollLength;
               args.y = { percentage: percentage  };
             }
           }
@@ -679,20 +689,20 @@
             // $scope.grid.queueRefresh();
           });
 
-          // $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
-          //   clearFocus();
+          $scope.$on(uiGridConstants.events.GRID_SCROLL, function (evt, args) {
+            clearFocus();
 
-          //   $timeout(function () {
-          //     var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+            $timeout(function () {
+              var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
 
-          //     if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
-          //       setFocused();
-          //     }
-          //     // else {
-          //     //   clearFocus();
-          //     // }
-          //   });
-          // });
+              if (lastRowCol.row === $scope.row && lastRowCol.col === $scope.col) {
+                setFocused();
+              }
+              // else {
+              //   clearFocus();
+              // }
+            });
+          });
 
           function setTabEnabled() {
             $elm.find('div').attr("tabindex", -1);
