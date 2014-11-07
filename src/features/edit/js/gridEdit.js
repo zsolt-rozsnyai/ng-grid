@@ -369,8 +369,8 @@
    *
    */
   module.directive('uiGridCell',
-    ['$compile', 'uiGridConstants', 'uiGridEditConstants', 'gridUtil', '$parse', 'uiGridEditService',
-      function ($compile, uiGridConstants, uiGridEditConstants, gridUtil, $parse, uiGridEditService) {
+    ['$compile', '$injector', 'uiGridConstants', 'uiGridEditConstants', 'gridUtil', '$parse', 'uiGridEditService',
+      function ($compile, $injector, uiGridConstants, uiGridEditConstants, gridUtil, $parse, uiGridEditService) {
         return {
           priority: -100, // run after default uiGridCell directive
           restrict: 'A',
@@ -409,6 +409,20 @@
               evt.stopPropagation();
               beginEdit();
             }
+
+            try {
+              var uiGridCellNavConstants = $injector.get('uiGridCellNavConstants');
+
+              $scope.$on(uiGridCellNavConstants.CELL_NAV_EVENT, function (evt, rowCol) {
+                if (rowCol.row === $scope.row && rowCol.col === $scope.col) {
+                  beginEdit();
+                }
+                else {
+                  endEdit(true);
+                }
+              });
+            }
+            catch (e) {}
 
             function beginEditKeyDown(evt) {
               if (uiGridEditService.isStartEditKey(evt)) {
