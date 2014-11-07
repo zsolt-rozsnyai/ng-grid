@@ -631,6 +631,10 @@
 
               uiGridCtrl.cellNav = {};
 
+              uiGridCtrl.cellNav.focusCell = function (row, col) {
+                uiGridCtrl.cellNav.broadcastCellNav({ row: row, col: col });
+              };
+
               //  gridUtil.logDebug('uiGridEdit preLink');
               uiGridCtrl.cellNav.broadcastCellNav = function (newRowCol) {
                 $scope.$broadcast(uiGridCellNavConstants.CELL_NAV_EVENT, newRowCol);
@@ -645,6 +649,37 @@
                 }
               };
 
+              uiGridCtrl.cellNav.handleKeyDown = function (evt) {
+                var direction = uiGridCellNavService.getDirection(evt);
+                if (direction === null) {
+                  return true;
+                }
+
+                var containerId = 'body';
+                if (evt.uiGridTargetRenderContainerId) {
+                  containerId = evt.uiGridTargetRenderContainerId;
+                }
+
+                // Get the last-focused row+col combo
+                var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+                if (lastRowCol) {
+                  // Figure out which new row+combo we're navigating to
+                  var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
+
+                  rowCol.eventType = uiGridCellNavConstants.EVENT_TYPE.KEYDOWN;
+
+                  // Broadcast the navigation
+                  uiGridCtrl.cellNav.broadcastCellNav(rowCol);
+
+                  // Scroll to the new cell, if it's not completely visible within the render container's viewport
+                  uiGridCellNavService.scrollToIfNecessary(grid, $scope, rowCol.row, rowCol.col);
+
+                  evt.stopPropagation();
+                  evt.preventDefault();
+
+                  return false;
+                }
+              };
             },
             post: function ($scope, $elm, $attrs, uiGridCtrl) {
             }
@@ -676,30 +711,8 @@
 
               // Bind to keydown events in the render container
               $elm.on('keydown', function (evt) {
-                var direction = uiGridCellNavService.getDirection(evt);
-                if (direction === null) {
-                  return true;
-                }
-
-                // Get the last-focused row+col combo
-                var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
-                if (lastRowCol) {
-                  // Figure out which new row+combo we're navigating to
-                  var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
-
-                  rowCol.eventType = uiGridCellNavConstants.EVENT_TYPE.KEYDOWN;
-
-                  // Broadcast the navigation
-                  uiGridCtrl.cellNav.broadcastCellNav(rowCol);
-
-                  // Scroll to the new cell, if it's not completely visible within the render container's viewport
-                  uiGridCellNavService.scrollToIfNecessary(grid, $scope, rowCol.row, rowCol.col);
-
-                  evt.stopPropagation();
-                  evt.preventDefault();
-
-                  return false;
-                }
+                evt.uiGridTargetRenderContainerId = containerId;
+                return uiGridCtrl.cellNav.handleKeyDown(evt);
               });
 
               // When there's a scroll event we need to make sure to re-focus the right row, because the cell contents may have changed
