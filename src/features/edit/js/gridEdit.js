@@ -393,6 +393,7 @@
               $elm.on('keydown', beginEditKeyDown);
               if ($scope.col.colDef.enableCellEditOnFocus) {
                 $elm.find('div').on('focus', beginEditFocus);
+                // $elm.find('div').on('click', beginEditFocus);
               }
             }
 
@@ -401,6 +402,7 @@
               $elm.off('keydown', beginEditKeyDown);
               if ($scope.col.colDef.enableCellEditOnFocus) {
                 $elm.find('div').off('focus', beginEditFocus);
+                // $elm.find('div').off('click', beginEditFocus);
               }
             }
 
@@ -418,7 +420,7 @@
                   beginEdit();
                 }
                 else {
-                  endEdit(true);
+                  endEdit();
                 }
               });
             }

@@ -16,7 +16,11 @@
   module.constant('uiGridCellNavConstants', {
     FEATURE_NAME: 'gridCellNav',
     CELL_NAV_EVENT: 'cellNav',
-    direction: {LEFT: 0, RIGHT: 1, UP: 2, DOWN: 3}
+    direction: {LEFT: 0, RIGHT: 1, UP: 2, DOWN: 3},
+    EVENT_TYPE: {
+      KEYDOWN: 0,
+      CLICK: 1
+    }
   });
 
 
@@ -679,20 +683,23 @@
 
                 // Get the last-focused row+col combo
                 var lastRowCol = uiGridCtrl.grid.api.cellNav.getFocusedCell();
+                if (lastRowCol) {
+                  // Figure out which new row+combo we're navigating to
+                  var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
 
-                // Figure out which new row+combo we're navigating to
-                var rowCol = uiGridCtrl.grid.renderContainers[containerId].cellNav.getNextRowCol(direction, lastRowCol.row, lastRowCol.col);
+                  rowCol.eventType = uiGridCellNavConstants.EVENT_TYPE.KEYDOWN;
 
-                // Broadcast the navigation
-                uiGridCtrl.cellNav.broadcastCellNav(rowCol);
+                  // Broadcast the navigation
+                  uiGridCtrl.cellNav.broadcastCellNav(rowCol);
 
-                // Scroll to the new cell, if it's not completely visible within the render container's viewport
-                uiGridCellNavService.scrollToIfNecessary(grid, $scope, rowCol.row, rowCol.col);
+                  // Scroll to the new cell, if it's not completely visible within the render container's viewport
+                  uiGridCellNavService.scrollToIfNecessary(grid, $scope, rowCol.row, rowCol.col);
 
-                evt.stopPropagation();
-                evt.preventDefault();
+                  evt.stopPropagation();
+                  evt.preventDefault();
 
-                return false;
+                  return false;
+                }
               });
 
               // When there's a scroll event we need to make sure to re-focus the right row, because the cell contents may have changed
@@ -751,6 +758,10 @@
             if (rowCol.row === $scope.row &&
               rowCol.col === $scope.col) {
               setFocused();
+
+              if (rowCol.hasOwnProperty('eventType') && rowCol.eventType === uiGridCellNavConstants.EVENT_TYPE.KEYDOWN) {
+                $elm.find('div')[0].focus();
+              }
             }
             else {
               clearFocus();
