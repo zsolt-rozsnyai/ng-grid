@@ -512,6 +512,10 @@
              * 
              */
             function beginEdit() {
+              if (inEdit) {
+                return;
+              }
+
               if (!shouldEdit($scope.col, $scope.row)) {
                 return;
               }
