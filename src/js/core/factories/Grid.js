@@ -1188,6 +1188,7 @@ angular.module('ui.grid')
    */
   Grid.prototype.queueRefresh = function queueRefresh() {
     var self = this;
+
     if (self.refreshCanceller) {
       $timeout.cancel(self.refreshCanceller);
     }
@@ -1551,7 +1552,7 @@ angular.module('ui.grid')
    * 
    */
   Grid.prototype.refresh = function refresh() {
-    // gridUtil.logDebug('grid refresh');
+    gridUtil.logDebug('grid refresh');
     
     var self = this;
     
@@ -1617,6 +1618,11 @@ angular.module('ui.grid')
       if (self.renderContainers.hasOwnProperty(containerId)) {
         var container = self.renderContainers[containerId];
 
+        // Skip containers that have no canvasWidth set yet
+        if (container.canvasWidth === null || isNaN(container.canvasWidth)) {
+          continue;
+        }
+
         if (container.header) {
           containerHeadersToRecalc.push(container);
         }
@@ -1636,6 +1642,11 @@ angular.module('ui.grid')
         var i, container;
         for (i = 0; i < containerHeadersToRecalc.length; i++) {
           container = containerHeadersToRecalc[i];
+
+          // Skip containers that have no canvasWidth set yet
+          if (container.canvasWidth === null || isNaN(container.canvasWidth)) {
+            continue;
+          }
 
           if (container.header) {
             var oldHeaderHeight = container.headerHeight;
