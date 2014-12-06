@@ -1,12 +1,12 @@
 (function(){
 
 angular.module('ui.grid')
-  
+
   /**
    * @ngdoc function
    * @name ui.grid.class:GridRenderContainer
    * @description The grid has render containers, allowing the ability to have pinned columns.  If the grid
-   * is right-to-left then there may be a right render container, if left-to-right then there may 
+   * is right-to-left then there may be a right render container, if left-to-right then there may
    * be a left render container.  There is always a body render container.
    * @param {string} name The name of the render container ('body', 'left', or 'right')
    * @param {Grid} grid the grid the render container is in
@@ -23,7 +23,7 @@ angular.module('ui.grid')
     self.name = name;
 
     self.grid = grid;
-    
+
     // self.rowCache = [];
     // self.columnCache = [];
 
@@ -124,7 +124,7 @@ angular.module('ui.grid')
    * @methodOf ui.grid.class:GridRenderContainer
    * @description Registers an adjuster to the render container's available width or height.  Adjusters are used
    * to tell the render container that there is something else consuming space, and to adjust it's size
-   * appropriately.  
+   * appropriately.
    * @param {function} func the adjuster function we want to register
    */
 
@@ -151,7 +151,7 @@ angular.module('ui.grid')
    * @ngdoc function
    * @name getViewportAdjustment
    * @methodOf ui.grid.class:GridRenderContainer
-   * @description Gets the adjustment based on the viewportAdjusters.  
+   * @description Gets the adjustment based on the viewportAdjusters.
    * @returns {object} a hash of { height: x, width: y }.  Usually the values will be negative
    */
   GridRenderContainer.prototype.getViewportAdjustment = function getViewportAdjustment() {
@@ -179,7 +179,7 @@ angular.module('ui.grid')
     }
 
     var adjustment = self.getViewportAdjustment();
-    
+
     viewPortHeight = viewPortHeight + adjustment.height;
 
     return viewPortHeight;
@@ -195,7 +195,7 @@ angular.module('ui.grid')
     }
 
     var adjustment = self.getViewportAdjustment();
-    
+
     viewPortWidth = viewPortWidth + adjustment.width;
 
     return viewPortWidth;
@@ -259,7 +259,7 @@ angular.module('ui.grid')
     for (var i = 0; i < newColumns.length; i++) {
       this.renderedColumns[i] = newColumns[i];
     }
-    
+
     this.updateColumnOffset();
   };
 
@@ -324,14 +324,14 @@ angular.module('ui.grid')
     if ((typeof(scrollPercentage) === 'undefined' || scrollPercentage === null) && scrollTop) {
       scrollPercentage = scrollTop / self.getCanvasHeight();
     }
-    
+
     var rowIndex = Math.ceil(Math.min(maxRowIndex, maxRowIndex * scrollPercentage));
 
     // Define a max row index that we can't scroll past
     if (rowIndex > maxRowIndex) {
       rowIndex = maxRowIndex;
     }
-    
+
     var newRange = [];
     if (rowCache.length > self.grid.options.virtualizationThreshold) {
       // Have we hit the threshold going down?
@@ -377,7 +377,7 @@ angular.module('ui.grid')
     if (colIndex > maxColumnIndex) {
       colIndex = maxColumnIndex;
     }
-    
+
     var newRange = [];
     if (columnCache.length > self.grid.options.columnVirtualizationThreshold && self.getCanvasWidth() > self.getViewportWidth()) {
       // Have we hit the threshold going down?
@@ -399,7 +399,7 @@ angular.module('ui.grid')
 
       newRange = [0, Math.max(maxLen, minCols + self.grid.options.excessColumns)];
     }
-    
+
     self.updateViewableColumnRange(newRange);
 
     self.prevColumnScrollIndex = colIndex;
@@ -430,11 +430,39 @@ angular.module('ui.grid')
     this.setRenderedColumns(columnArr);
   };
 
+  GridRenderContainer.prototype.getViewPortStyle = function() {
+    var self = this;
+    var styles = {};
+
+    if (self.name === 'body'){
+      styles['overflow-x'] = 'scroll';
+      if (self.grid.hasRightContainerColumns()) {
+        styles['overflow-y'] = 'hidden';
+      }
+      else {
+        styles['overflow-y'] = 'scroll';
+      }
+    }
+    else if (self.name === 'left'){
+      styles['overflow-x'] = 'hidden';
+      styles['overflow-y'] = 'hidden';
+    }
+    else {
+      styles['overflow-x'] = 'hidden';
+      styles['overflow-y'] = 'scroll';
+    }
+
+   // if (self.grid.isRTL()) {
+
+    return styles;
+
+  };
+
   GridRenderContainer.prototype.rowStyle = function (index) {
     var self = this;
 
     var styles = {};
-    
+
     if (index === 0 && self.currentTopRow !== 0) {
       // The row offset-top is just the height of the rows above the current top-most row, which are no longer rendered
       var hiddenRowWidth = (self.currentTopRow) * self.grid.options.rowHeight;
@@ -457,7 +485,7 @@ angular.module('ui.grid')
 
   GridRenderContainer.prototype.columnStyle = function (index) {
     var self = this;
-    
+
     if (index === 0 && self.currentFirstColumn !== 0) {
       var offset = self.columnOffset;
 
@@ -522,7 +550,7 @@ angular.module('ui.grid')
 
       if (angular.isString(column.width) && column.width.indexOf('*') !== -1) { //  we need to save it until the end to do the calulations on the remaining width.
         asteriskNum = parseInt(asteriskNum + column.width.length, 10);
-        
+
         asterisksArray.push(column);
       }
       else if (isPercent) { // If the width is a percentage, save it until the very last.
@@ -530,7 +558,7 @@ angular.module('ui.grid')
       }
       else if (angular.isNumber(column.width)) {
         manualWidthSum = parseInt(manualWidthSum + column.width, 10);
-        
+
         canvasWidth = parseInt(canvasWidth, 10) + parseInt(column.width, 10);
 
         column.drawnWidth = column.width;

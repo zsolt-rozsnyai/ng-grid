@@ -623,13 +623,34 @@ angular.module('ui.grid')
 
   /**
    * @ngdoc function
-   * @name hasLeftContainer
+   * @name hasRightContainer
    * @methodOf ui.grid.class:Grid
    * @description returns true if rightContainer exists
    */
   Grid.prototype.hasRightContainer = function() {
     return this.renderContainers.right !== undefined;
   };
+
+  /**
+   * @ngdoc function
+   * @name hasLeftContainerColumns
+   * @methodOf ui.grid.class:Grid
+   * @description returns true if leftContainer has columns
+   */
+  Grid.prototype.hasLeftContainerColumns = function() {
+    return this.hasLeftContainer() && this.renderContainers.left.renderedColumns.length > 0;
+  };
+
+  /**
+   * @ngdoc function
+   * @name hasRightContainerColumns
+   * @methodOf ui.grid.class:Grid
+   * @description returns true if rightContainer has columns
+   */
+  Grid.prototype.hasRightContainerColumns = function() {
+    return this.hasRightContainer() && this.renderContainers.right.renderedColumns.length > 0;
+  };
+
 
 
       /**
