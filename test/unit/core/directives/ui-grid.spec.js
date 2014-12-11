@@ -1,4 +1,4 @@
-describe('ui-grid', function() {
+ddescribe('ui-grid', function() {
 
   beforeEach(module('ui.grid'));
   // beforeEach(module('ui.grid.body'));

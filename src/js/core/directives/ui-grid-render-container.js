@@ -400,7 +400,7 @@
             $scope.rowContainer.visibleRowCache[$scope.rowContainer.currentTopRow].height;
 
           // return { 'margin-top': hiddenRowWidth + 'px' };
-          styles['margin-top'] = hiddenRowWidth + 'px';
+          styles['padding-top'] = hiddenRowWidth + 'px';
         }
       }
       
