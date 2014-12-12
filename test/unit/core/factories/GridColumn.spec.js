@@ -268,8 +268,8 @@ describe('GridColumn factory', function () {
       col = grid.columns[0];
     });
 
-    it('should return a promise', function () {
-      expect(col.getCompiledElementFn().hasOwnProperty('then')).toBe(true);
+    iit('should return a promise', function () {
+      expect('then' in col.getCompiledElementFn()).toBe(true);
     });
 
     it('should return a promise that is resolved when the cellTemplate is compiled', function () {
