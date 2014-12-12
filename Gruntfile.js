@@ -269,9 +269,13 @@ module.exports = function(grunt) {
         globals: {
           angular: false,
 
+          /* Protractor */
+          browser: false,
+
           /* jquery (testing only) */
           $:false,
           jQuery: false,
+
 
           /* grunt */
           process: false,
@@ -442,9 +446,9 @@ module.exports = function(grunt) {
         },
         scripts: [
            // no jquery automatically loaded for tutorial!!!
-          '//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js',
-          '//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-touch.js',
-          '//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-animate.js',
+          '//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.js',
+          '//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-touch.js',
+          '//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.js',
           'bower_components/csv-js/csv.js',
           'bower_components/pdfmake/build/pdfmake.js',
           'bower_components/pdfmake/build/vfs_fonts.js'
