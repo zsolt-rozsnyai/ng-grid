@@ -1,6 +1,27 @@
 (function(){
   'use strict';
 
+  //https://coderwall.com/p/d_aisq/speeding-up-angularjs-s-digest-loop
+  angular.module('ui.grid').directive('uiGridSuspendable', function () {
+    return {
+      link: function (scope) {
+        // FIXME: this might break is suspend/resume called out of order
+        // or if watchers are added while suspended
+        var watchers;
+
+        scope.$on('suspend', function () {
+          watchers = scope.$$watchers;
+          scope.$$watchers = [];
+        });
+
+        scope.$on('resume', function () {
+          scope.$$watchers = watchers;
+          watchers = void 0;
+        });
+      }
+    };
+  });
+
   angular.module('ui.grid').directive('uiGridViewport', ['gridUtil',
     function(gridUtil) {
       return {
@@ -31,6 +52,11 @@
           containerCtrl.viewport = $elm;
 
           $elm.on('scroll', function (evt) {
+
+
+
+
+
             var newScrollTop = $elm[0].scrollTop;
             // var newScrollLeft = $elm[0].scrollLeft;
             var newScrollLeft = gridUtil.normalizeScrollLeft($elm);
@@ -75,6 +101,10 @@
               }
               uiGridCtrl.fireScrollingEvent(args); 
             }
+
+            $scope.$broadcast('suspend');
+            $scope.$digest();
+            $scope.$broadcast('resume');
           });
         }
       };
