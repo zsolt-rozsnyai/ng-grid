@@ -723,6 +723,7 @@
                 var gridCellContentsEl = angular.element($elm.children()[0]);
                 gridCellContentsEl.addClass('ui-grid-cell-contents-hidden');
               };
+              $scope.grid.disableScrolling = true;
               if (!$rootScope.$$phase) {
                 $scope.$apply(createEditor);
               } else {
@@ -760,6 +761,7 @@
             }
 
             function endEdit(retainFocus) {
+              $scope.grid.disableScrolling = false;
               if (!inEdit) {
                 return;
               }
@@ -774,6 +776,7 @@
             }
 
             function cancelEdit() {
+              $scope.grid.disableScrolling = false;
               if (!inEdit) {
                 return;
               }
@@ -862,6 +865,7 @@
                   $scope.deepEdit = false;
                 };
 
+
                 $elm.on('click', function (evt) {
                   if ($elm[0].type !== 'checkbox') {
                     $scope.deepEdit = true;
@@ -889,7 +893,7 @@
                         break;
                       case uiGridConstants.keymap.RIGHT:
                         evt.stopPropagation();
-                        break;
+                        return false;
                       case uiGridConstants.keymap.UP:
                         evt.stopPropagation();
                         break;
